@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
 
 // Definimos la interfaz para el modelo Customer
@@ -11,7 +11,7 @@ interface ICustomer extends Document {
 }
 
 // Definimos el esquema del modelo Customer
-const customerSchema: Schema = new Schema({
+export const customerSchema: Schema = new Schema({
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
     nif: { type: String, required: true, unique: true },
@@ -19,16 +19,24 @@ const customerSchema: Schema = new Schema({
     telefono: { type: String, required: true }
 });
 
-// Creamos y exportamos el modelo Customer
-const Customer = mongoose.model
+
+// Creamos el modelo Customer con model<ICustomer>("Customer", customerSchema)
+const Customer = model<ICustomer>("Customer", customerSchema);
+
+// Exportamos el modelo Customer
+export default Customer;
 
 // crear un cliente
 export const createCustomer = async (req: Request, res: Response) => {
     try {
+        // Creamos una nueva instancia del modelo Customer con los datos del cuerpo de la solicitud (req.body)
         const newCustomer = new Customer(req.body);
+        // Guardamos el nuevo cliente en la base de datos
         const savedCustomer = await newCustomer.save();
+        // Respondemos con el cliente recién guardado
         res.status(201).json(savedCustomer);
     } catch (error) {
+        // En caso de error, respondemos con un código de estado 400 y un mensaje de error
         res.status(400).json({ message: error.message });
     }
 };
