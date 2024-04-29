@@ -4,7 +4,7 @@ import { providerSchema } from "./provider.js";
 import { furnitureSchema } from "./furniture.js";
 
 // Definición de la interfaz para el documento de transacción
-interface ITransaction extends Document {
+interface Transaction extends Document {
   type: "Compra" | "Venta";
   furniture: (typeof furnitureSchema)[];
   customer?: typeof customerSchema;
@@ -13,7 +13,7 @@ interface ITransaction extends Document {
 }
 
 // Definición del esquema de transacción
-export const transactionSchema = new Schema<ITransaction>({
+export const transactionSchema = new Schema<Transaction>({
   type: {
     type: String,
     enum: ["Compra", "Venta"],
@@ -40,10 +40,10 @@ export const transactionSchema = new Schema<ITransaction>({
 });
 
 // Creación del modelo de transacción
-const TransactionModel = model<ITransaction>("Transaction", transactionSchema);
+const TransactionModel = model<Transaction>("Transaction", transactionSchema);
 
 // Función para obtener transacciones por tipo
-export async function getTransactionsByType(type: "Compra" | "Venta" | "Alquiler"): Promise<ITransaction[]> {
+export async function getTransactionsByType(type: "Compra" | "Venta"): Promise<Transaction[]> {
   try {
     const transactions = await TransactionModel.find({ type }).populate("furniture customer provider");
     return transactions;
@@ -53,7 +53,7 @@ export async function getTransactionsByType(type: "Compra" | "Venta" | "Alquiler
 }
 
 // Función para obtener transacciones por proveedor
-export async function getTransactionsByProvider(providerId: string): Promise<ITransaction[]> {
+export async function getTransactionsByProvider(providerId: string): Promise<Transaction[]> {
   try {
     const transactions = await TransactionModel.find({ provider: providerId }).populate("furniture customer provider");
     return transactions;
