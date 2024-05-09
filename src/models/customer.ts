@@ -23,5 +23,19 @@ export const customerSchema: Schema = new Schema({
 // Creamos el modelo Customer con model<ICustomer>("Customer", customerSchema)
 const Customer = model<ICustomer>("Customer", customerSchema);
 
+const customer = new Customer({
+    nombre: "Loren",
+    apellido: "PEPE",
+    nif: "333333M",
+    direccion: "Micasa",
+    telefono: "666666666"
+  });
+
+customer.save().then((result) => {
+    console.log(result);
+  }).catch((error) => {
+    console.log(error);
+  });
+
 // Exportamos el modelo Customer
 export default Customer;
