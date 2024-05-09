@@ -25,8 +25,8 @@ CustomerRouter.get('/customers', async (req: Request, res: Response) => {
 });
 
 // Leer un cliente por NIF
-CustomerRouter.get('/customers/nif/:nif', async (req: Request, res: Response) => {
-  const nif = req.params.nif;
+CustomerRouter.get('/customers', async (req: Request, res: Response) => {
+  const nif = req.query.nif;
   try {
     const customer = await Customer.findOne({ nif });
     if (!customer) {
