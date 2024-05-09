@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import Customer from '../models/customer.js'; 
 
-const router = express.Router();
+export const CustomerRouter = express.Router();
 
 // Crear un nuevo cliente
-router.post('/customers', async (req: Request, res: Response) => {
+CustomerRouter.post('/customers', async (req: Request, res: Response) => {
   try {
     const customer = new Customer(req.body);
     await customer.save();
@@ -15,7 +15,7 @@ router.post('/customers', async (req: Request, res: Response) => {
 });
 
 // Leer todos los clientes
-router.get('/customers', async (req: Request, res: Response) => {
+CustomerRouter.get('/customers', async (req: Request, res: Response) => {
   try {
     const customers = await Customer.find();
     res.send(customers);
@@ -25,7 +25,7 @@ router.get('/customers', async (req: Request, res: Response) => {
 });
 
 // Leer un cliente por NIF
-router.get('/customers/nif/:nif', async (req: Request, res: Response) => {
+CustomerRouter.get('/customers/nif/:nif', async (req: Request, res: Response) => {
   const nif = req.params.nif;
   try {
     const customer = await Customer.findOne({ nif });
@@ -40,7 +40,7 @@ router.get('/customers/nif/:nif', async (req: Request, res: Response) => {
 
 
 // Leer un cliente por ID
-router.get('/customers/id/:id', async (req: Request, res: Response) => {
+CustomerRouter.get('/customers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const customer = await Customer.findById(id);
@@ -55,7 +55,7 @@ router.get('/customers/id/:id', async (req: Request, res: Response) => {
   
 
 // Actualizar un cliente por NIF
-router.put('/customers/nif/:nif', async (req: Request, res: Response) => {
+CustomerRouter.put('/customers/nif/:nif', async (req: Request, res: Response) => {
     const nif = req.params.nif;
     try {
       const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
@@ -69,7 +69,7 @@ router.put('/customers/nif/:nif', async (req: Request, res: Response) => {
 });
 
 // Actualizar un cliente por ID
-router.put('/customers/id/:id', async (req: Request, res: Response) => {
+CustomerRouter.put('/customers/id/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
     const customer = await Customer.findByIdAndUpdate(id, req.body, { new: true });
@@ -83,7 +83,7 @@ router.put('/customers/id/:id', async (req: Request, res: Response) => {
 });
 
 // Borrar un cliente por NIF
-router.delete('/customers/nif/:nif', async (req: Request, res: Response) => {
+CustomerRouter.delete('/customers/nif/:nif', async (req: Request, res: Response) => {
   const nif = req.params.nif;
   try {
     const customer = await Customer.findOneAndDelete({ nif });
@@ -97,7 +97,7 @@ router.delete('/customers/nif/:nif', async (req: Request, res: Response) => {
 });
 
 // Borrar un cliente por ID
-router.delete('/customers/id/:id', async (req: Request, res: Response) => {
+CustomerRouter.delete('/customers/id/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
     const customer = await Customer.findByIdAndDelete(id);
@@ -109,5 +109,3 @@ router.delete('/customers/id/:id', async (req: Request, res: Response) => {
     return res.status(500).send(error);
   }
 });
-
-export default router;

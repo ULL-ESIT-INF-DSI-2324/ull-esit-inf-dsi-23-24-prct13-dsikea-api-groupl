@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import initialize from '../models/provider.js'; // Ajusta la ruta y el nombre del archivo según sea necesario
 
-const router = express.Router();
+export const ProvidersRouter = express.Router();
 
 // Crear un nuevo proveedor
-router.post('/providers', async (req: Request, res: Response) => {
+ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
   try {
     const ProviderModel = await initialize();
     const provider = new ProviderModel(req.body);
@@ -16,7 +16,7 @@ router.post('/providers', async (req: Request, res: Response) => {
 });
 
 // Leer todos los proveedores
-router.get('/providers', async (req: Request, res: Response) => {
+ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
   try {
     const ProviderModel = await initialize();
     const providers = await ProviderModel.find();
@@ -27,7 +27,7 @@ router.get('/providers', async (req: Request, res: Response) => {
 });
 
 // Leer un proveedor por CIF
-router.get('/providers/:cif', async (req: Request, res: Response) => {
+ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
       const ProviderModel = await initialize();
@@ -42,7 +42,7 @@ router.get('/providers/:cif', async (req: Request, res: Response) => {
   });
 
 // Leer un proveedor por ID
-router.get('/providers/id/:id', async (req: Request, res: Response) => {
+ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const ProviderModel = await initialize();
@@ -58,7 +58,7 @@ router.get('/providers/id/:id', async (req: Request, res: Response) => {
 
 
 // Actualizar un proveedor por CIF
-router.put('/providers/:cif', async (req: Request, res: Response) => {
+ProvidersRouter.put('/providers/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
       const ProviderModel = await initialize();
@@ -73,7 +73,7 @@ router.put('/providers/:cif', async (req: Request, res: Response) => {
   });
 
 // Borrar un proveedor por CIF
-router.delete('/providers/:cif', async (req: Request, res: Response) => {
+ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
       const ProviderModel = await initialize();
@@ -88,7 +88,7 @@ router.delete('/providers/:cif', async (req: Request, res: Response) => {
 });
 
 // Borrar un proveedor por ID
-router.delete('/providers/id/:id', async (req: Request, res: Response) => {
+ProvidersRouter.delete('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const ProviderModel = await initialize();
@@ -102,4 +102,3 @@ router.delete('/providers/id/:id', async (req: Request, res: Response) => {
     }
   });
 
-export default router;

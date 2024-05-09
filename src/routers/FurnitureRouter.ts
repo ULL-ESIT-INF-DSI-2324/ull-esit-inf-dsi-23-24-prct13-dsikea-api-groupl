@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import initializeFurnitureModel from '../models/furniture.js'; // Ajusta la importación según sea necesario
 
-const router = express.Router();
+export const FurnitureRouter = express.Router();
 
 // Crear un nuevo mueble
-router.post('/furnitures', async (req: Request, res: Response) => {
+FurnitureRouter.post('/furnitures', async (req: Request, res: Response) => {
   try {
     const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
     const furniture = new Furniture(req.body);
@@ -16,7 +16,7 @@ router.post('/furnitures', async (req: Request, res: Response) => {
 });
 
 // Leer todos los muebles
-router.get('/furnitures', async (req: Request, res: Response) => {
+FurnitureRouter.get('/furnitures', async (req: Request, res: Response) => {
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
       const furnitures = await Furniture.find();
@@ -28,7 +28,7 @@ router.get('/furnitures', async (req: Request, res: Response) => {
   
 
 // Leer un mueble por ID
-router.get('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.get('/furnitures/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
@@ -43,7 +43,7 @@ router.get('/furnitures/id/:id', async (req: Request, res: Response) => {
 }); 
 
 // Actualizar un mueble por ID
-router.put('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.put('/furnitures/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
@@ -59,7 +59,7 @@ router.put('/furnitures/id/:id', async (req: Request, res: Response) => {
   
 
 // Borrar un mueble por ID
-router.delete('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
@@ -75,7 +75,7 @@ router.delete('/furnitures/id/:id', async (req: Request, res: Response) => {
   
 
 // Leer un mueble por query string (campos flexibles)
-router.get('/furnitures/query', async (req: Request, res: Response) => {
+FurnitureRouter.get('/furnitures/query', async (req: Request, res: Response) => {
     const query = req.query;
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
@@ -88,7 +88,7 @@ router.get('/furnitures/query', async (req: Request, res: Response) => {
   
 
 // Actualizar un mueble por query string (campos flexibles)
-router.put('/furnitures/query', async (req: Request, res: Response) => {
+FurnitureRouter.put('/furnitures/query', async (req: Request, res: Response) => {
     const query = req.query;
     const newData = req.body;
     try {
@@ -105,7 +105,7 @@ router.put('/furnitures/query', async (req: Request, res: Response) => {
   
 
 // Borrar un mueble por query string (campos flexibles)
-router.delete('/furnitures/query', async (req: Request, res: Response) => {
+FurnitureRouter.delete('/furnitures/query', async (req: Request, res: Response) => {
     const query = req.query;
     try {
       const Furniture = await initializeFurnitureModel(); // Llama a la función para obtener el modelo
@@ -118,5 +118,3 @@ router.delete('/furnitures/query', async (req: Request, res: Response) => {
       return res.status(500).send(error);
     }
 });
-  
-export default router;
