@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
+import validator from 'validator';
 
 // Validador de NIF
 const validarNIF = (nif: string): boolean => {
