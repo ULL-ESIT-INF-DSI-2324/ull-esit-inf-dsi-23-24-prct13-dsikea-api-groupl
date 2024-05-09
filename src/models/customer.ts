@@ -1,6 +1,12 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
 
+// Validador de NIF
+const validarNIF = (nif: string): boolean => {
+  const regex = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
+  return regex.test(nif);
+};
+
 // Definimos la interfaz para el modelo Customer
 interface ICustomer extends Document {
     nombre: string;
@@ -14,7 +20,12 @@ interface ICustomer extends Document {
 export const customerSchema: Schema = new Schema({
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
-    nif: { type: String, required: true, unique: true },
+    nif: { 
+      type: String, 
+      required: true, 
+      unique: true, 
+      validate: { validator: validarNIF, message: 'NIF no válido' }
+    },
     direccion: { type: String, required: true },
     telefono: { type: String, required: true }
 });
