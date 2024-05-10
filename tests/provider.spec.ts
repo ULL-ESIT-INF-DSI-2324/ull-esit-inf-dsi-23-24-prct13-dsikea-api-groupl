@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { expect } from 'chai';
 import { app } from '../src/index.js';
-import { Provider } from '../src/models/provider.js';
+import Provider from '../src/models/provider.js';
 
 const firstProvider = {
   name: "Provider1",

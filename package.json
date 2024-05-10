@@ -23,6 +23,7 @@
     "@types/validator": "^13.11.9",
     "chai": "^5.1.0",
     "mocha": "^10.4.0",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "tsc-watch": "^6.2.0",
     "typedoc": "^0.25.13",
@@ -36,7 +37,6 @@
     "chai-http": "^4.4.0",
     "express": "^4.19.2",
     "mongoose": "^8.3.2",
-    "supertest": "^7.0.0",
     "validator": "^13.11.0"
   }
 }
