@@ -79,16 +79,33 @@ CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
 });
 
 // Actualizar un cliente por ID
-CustomerRouter.put('/customers/id/:id', async (req: Request, res: Response) => {
-  const id = req.params.id;
-  try {
-    const customer = await Customer.findByIdAndUpdate(id, req.body, { new: true });
-    if (!customer) {
-      return res.status(404).send({ message: 'Cliente no encontrado' });
-    }
-    return res.send(customer);
-  } catch (error) {
-    return res.status(400).send(error);
+CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
+  // Si en el query string se encuentra el parámetro nif, se busca por nif y se actualiza con el cliente nuevo
+  if (req.query.nif) {
+      const nif = req.query.nif as string;
+      // Comprobar que el cliente del body es válido
+      const allowedUpdates = ['nombre', 'apellido', 'direccion', 'telefono'];
+      const actualUpdates = Object.keys(req.body);
+      const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+      if (!isValidUpdate) {
+          return res.status(400).send({
+              error: 'Actualización no permitida',
+          });
+      }
+
+      try {
+          const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
+          if (!customer) {
+              return res.status(404).send({ message: 'Cliente no encontrado' });
+          }
+          return res.send(customer);
+      } catch (error) {
+          return res.status(500).send(error);
+      }
+  } else {
+      // Si el parámetro nif no se encuentra se devuelve un error
+      return res.status(400).send({ message: 'No se ha proporcionado un NIF' });
   }
 });
 
