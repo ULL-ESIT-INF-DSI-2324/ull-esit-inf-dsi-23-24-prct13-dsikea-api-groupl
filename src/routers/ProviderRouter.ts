@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Provider } from "../models/provider.js";
+import Provider  from "../models/provider.js";
 
 export const ProvidersRouter = express.Router();
 
