@@ -133,18 +133,58 @@ TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response)
 });
 
 
-
-
-/*
-TransactionRouter.delete('/transactions/id/:id', async(req: Request, res: Response) => {
-  //para realizar el borrado de una transaccion se debe de proporcionar el id de la transaccion, se tendrá que actualizar la informacion del stock se los muebles involucrados
-  const id = req.params.id;
+TransactionRouter.delete('/transactions/:id', async (req: Request, res: Response) => {
   try {
-    const transaction = await Transaction.findByIdAndDelete(id);
+    // Filtrado de la transacción
+    const id = req.params.id;
+    const filter = { _id: id };
+
+    // Búsqueda de la transacción
+    const transaction = await Transaction.findById(id);
     if (!transaction) {
-      return res.status(404).send({  message: 'No existen clientes/proveedores con ese id' });
+      return res.status(404).send({ error: 'La transacción no existe' });
+    }
 
+    // Verificación de existencia del participante
+    const customer = await Customer.findById(transaction.customer);
+    const provider = await Provider.findById(transaction.provider);
+    if (!customer && !provider) {
+      return res.status(404).send({ error: 'El cliente o proveedor asociado a la transacción no existe' });
+    }
 
+    // Verificación del tipo de transacción y manipulación de stock
+    if (transaction.type === 'Venta' && customer) {
+      // Se aumenta el stock para los muebles vendidos al cliente
+      for (const furnitureData of transaction.furniture) {
+        const furniture = await Furniture.findById(furnitureData.furniture);
+        if (!furniture) {
+          return res.status(404).send({ error: 'Uno de los muebles asociados a la transacción no existe' });
+        }
+        furniture.stock += furnitureData.quantity.valueOf();
+        await furniture.save();
+      }
+    } else if (transaction.type === 'Compra' && provider) {
+      // Se disminuye el stock para los muebles comprados al proveedor
+      for (const furnitureData of transaction.furniture) {
+        const furniture = await Furniture.findById(furnitureData.furniture);
+        if (!furniture) {
+          return res.status(404).send({ error: 'Uno de los muebles asociados a la transacción no existe' });
+        }
+        if (furniture.stock < furnitureData.quantity.valueOf()) {
+          return res.status(400).send({ error: 'No hay suficiente stock para realizar la eliminación' });
+        }
+        furniture.stock -= furnitureData.quantity.valueOf();
+        await furniture.save();
+      }
+    }
+
+    // Eliminación de la transacción
+    await Transaction.findByIdAndDelete(id);
+
+    // Respuesta HTTP en caso de éxito
+    return res.status(200).send({ message: 'Transacción eliminada exitosamente' });
+  } catch (error) {
+    // Respuesta HTTP en caso de error
+    return res.status(500).send({ error: 'Hubo un error tratando de eliminar la transacción' });
+  }
 });
-
-*/
