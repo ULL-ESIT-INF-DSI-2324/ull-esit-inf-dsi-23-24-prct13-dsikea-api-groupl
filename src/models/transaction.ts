@@ -4,16 +4,17 @@ import { providerSchema } from "./provider.js";
 import { furnitureSchema } from "./furniture.js";
 
 // Definición de la interfaz para el documento de transacción
-interface Transaction extends Document {
+interface ITransaction extends Document {
   type: "Compra" | "Venta";
   furniture: (typeof furnitureSchema)[];
   customer?: typeof customerSchema;
   provider?: typeof providerSchema;
+  price: Number;
   timestamp: Date;
 }
 
 // Definición del esquema de transacción
-export const transactionSchema = new Schema<Transaction>({
+export const transactionSchema = new Schema({
   type: {
     type: String,
     enum: ["Compra", "Venta"],
@@ -23,6 +24,7 @@ export const transactionSchema = new Schema<Transaction>({
     {
       type: Schema.Types.ObjectId,
       ref: "Furniture",
+      required: true,
     },
   ],
   customer: {
@@ -36,30 +38,20 @@ export const transactionSchema = new Schema<Transaction>({
   timestamp: {
     type: Date,
     default: Date.now,
+    required:true,
+  },
+  price: {
+    type: Number,
+    required: true,
+    validate: {
+      validator: (value: number) => value >= 0,
+      message: "Price must be a positive number",
+    },
   },
 });
 
 // Creación del modelo de transacción
-const TransactionModel = model<Transaction>("Transaction", transactionSchema);
+const Transaction = model<ITransaction>("Transaction", transactionSchema);
 
-// Función para obtener transacciones por tipo
-export async function getTransactionsByType(type: "Compra" | "Venta"): Promise<Transaction[]> {
-  try {
-    const transactions = await TransactionModel.find({ type }).populate("furniture customer provider");
-    return transactions;
-  } catch (error) {
-    throw new Error("Error fetching transactions");
-  }
-}
 
-// Función para obtener transacciones por proveedor
-export async function getTransactionsByProvider(providerId: string): Promise<Transaction[]> {
-  try {
-    const transactions = await TransactionModel.find({ provider: providerId }).populate("furniture customer provider");
-    return transactions;
-  } catch (error) {
-    throw new Error("Error fetching transactions");
-  }
-}
-
-export default TransactionModel;
+export default Transaction;
