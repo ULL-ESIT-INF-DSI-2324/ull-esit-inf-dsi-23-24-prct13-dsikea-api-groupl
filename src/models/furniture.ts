@@ -1,4 +1,4 @@
-import { Document, connect, model, Schema } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 
 // Definición del esquema
 interface IFurniture extends Document {
@@ -48,7 +48,7 @@ export const furnitureSchema = new Schema({
 
 
 // Creamos el modelo Customer con model<ICustomer>("Customer", customerSchema)
-const Furniture = model<IFurniture>("Customer", furnitureSchema);
+const Furniture = model<IFurniture>("Furniture", furnitureSchema);
 
 // Exportamos el modelo Customer
 export default Furniture;
