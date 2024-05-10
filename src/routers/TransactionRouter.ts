@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import  Transaction, { transactionSchema }  from '../models/transaction.js';
 import  Customer from '../models/customer.js';
 import  Furniture  from '../models/furniture.js';
-//import  Provider  from '../models/provider.js';
+import  Provider  from '../models/provider.js';
 
 export const TransactionRouter = express.Router();
 
@@ -19,6 +19,18 @@ if (req.query.nif) {
         return res.status(404).send({ message: 'Cliente no encontrado' });
       }
       const transactions = await Transaction.find({customer: customer._id});
+      return res.send(transactions);
+    } catch (error) {
+      return res.status(404).send({ message: 'No existen transacciones'});
+    } // debe buscar tambien en la base de datos de providers
+  } else if (req.query.nif) {
+    const nif = req.query.nif;
+    try {
+      const provider = await Provider.findOne({ nif });
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      const transactions = await Transaction.find({provider: provider._id});
       return res.send(transactions);
     } catch (error) {
       return res.status(404).send({ message: 'No existen transacciones'});
@@ -61,16 +73,7 @@ if (req.query.nif) {
 });
 
 
-/*
 
-
-TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
-  // comprobar que el cliente o el proveedor existe
-  const customer = await Customer.findById(req.body.customer);
-  const provider = await Provider.findById(req.body.provider);    
-});
-
-*/
 
 /*
 TransactionRouter.delete('/transactions/id/:id', async(req: Request, res: Response) => {

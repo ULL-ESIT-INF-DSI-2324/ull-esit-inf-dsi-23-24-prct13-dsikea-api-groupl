@@ -11,7 +11,7 @@ interface IFurniture extends Document {
     height: number;
   };
   price: number;
-  quantity?: number;
+  stock: number;
   color: string;
 }
 
@@ -37,7 +37,9 @@ export const furnitureSchema = new Schema({
       message: 'Price must be a positive number'
     }
   },
-  quantity: { type: Number },
+  stock: { type: Number,
+    required: true,
+   },
   color: {
     type: String,
     required: true,

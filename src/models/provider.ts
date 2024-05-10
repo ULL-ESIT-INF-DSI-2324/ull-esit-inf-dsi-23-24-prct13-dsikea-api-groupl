@@ -2,7 +2,7 @@ import { Document, connect, model, Schema } from "mongoose";
 import validator from 'validator';
 
 // Interfaz para el modelo de proveedores
-interface Provider extends Document {
+interface IProvider extends Document {
   name: string;
   contact: string;
   address: string;
@@ -12,7 +12,7 @@ interface Provider extends Document {
 }
 
 // Esquema para el modelo de proveedores
-export const providerSchema: Schema<Provider> = new Schema({
+export const providerSchema = new Schema({
   name: { type: String, required: true, trim: true },
   contact: { type: String, required: true, trim: true },
   address: { type: String, required: true, trim: true },
@@ -44,4 +44,6 @@ export const providerSchema: Schema<Provider> = new Schema({
 });
 
 
-export const Provider = model<Provider>('Provider', providerSchema);
+const Provider = model<IProvider>('Provider', providerSchema);
+
+export default Provider;
