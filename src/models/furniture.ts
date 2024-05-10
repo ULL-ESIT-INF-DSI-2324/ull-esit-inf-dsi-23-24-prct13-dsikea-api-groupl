@@ -1,17 +1,7 @@
 import { Document, connect, model, Schema } from 'mongoose';
 
-// Conexión a la base de datos
-async function connectToDatabase() {
-  try {
-    await connect("mongodb://127.0.0.1:27017/furnitures");
-    console.log("Connected to the furnitures database");
-  } catch (error) {
-    console.log("Failed to connect to the furnitures database");
-  }
-}
-
 // Definición del esquema
-interface Furniture extends Document {
+interface IFurniture extends Document {
   name: string;
   description: string;
   material: string;
@@ -26,7 +16,7 @@ interface Furniture extends Document {
 }
 
 // Creación del esquema de la base de datos
-export const furnitureSchema: Schema<Furniture> = new Schema({
+export const furnitureSchema = new Schema({
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
   material: {
@@ -55,10 +45,10 @@ export const furnitureSchema: Schema<Furniture> = new Schema({
   },
 });
 
-// Conexión a la base de datos y exportación del modelo
-async function initialize() {
-  await connectToDatabase();
-  return model<Furniture>("Furniture", furnitureSchema);
-}
 
-export default initialize;
+
+// Creamos el modelo Customer con model<ICustomer>("Customer", customerSchema)
+const Furniture = model<IFurniture>("Customer", furnitureSchema);
+
+// Exportamos el modelo Customer
+export default Furniture;

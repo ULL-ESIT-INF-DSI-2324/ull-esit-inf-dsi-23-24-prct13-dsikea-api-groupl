@@ -1,11 +1,14 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
+import validator from 'validator';
 
-// Validador de NIF
-const validarNIF = (nif: string): boolean => {
-  const regex = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
-  return regex.test(nif);
-};
+
+// haz un validador de NIF con regex
+function validarNIF(nif: string): boolean {
+    const regex = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
+    return regex.test(nif);
+}
+
 
 // Definimos la interfaz para el modelo Customer
 interface ICustomer extends Document {
@@ -24,7 +27,11 @@ export const customerSchema: Schema = new Schema({
       type: String, 
       required: true, 
       unique: true, 
-      validate: { validator: validarNIF, message: 'NIF no válido' }
+      // incluye el validador aquí
+        validate: {
+            validator: validarNIF,
+            message: 'NIF no válido'
+        }
     },
     direccion: { type: String, required: true },
     telefono: { type: String, required: true }

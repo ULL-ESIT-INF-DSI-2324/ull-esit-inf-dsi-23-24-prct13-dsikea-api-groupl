@@ -57,21 +57,11 @@ CustomerRouter.get('/customers/id/:id', async (req: Request, res: Response) => {
 
 // Actualizar un cliente por NIF
 CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
-  /*
-    const nif = req.query.nif;
-    try {
-      const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
-      if (!customer) {
-        return res.status(404).send({ message: 'Cliente no encontrado' });
-      }
-      return res.send(customer);
-    } catch (error) {
-      return res.status(400).send(error);
-    }
-    */
    // si en el query string se encuentra el parámetro nif se busca por nif y se actualiza con el cliente nuevo
   if (req.query.nif) {
     const nif = req.query.nif;
+    // comprobar que el cliente del body es válido 
+    
     try {
       const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
       if (!customer) {
