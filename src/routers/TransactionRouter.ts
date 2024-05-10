@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import  Transaction, { transactionSchema }  from '../models/transaction.js';
 import  Customer from '../models/customer.js';
 import  Furniture  from '../models/furniture.js';
-import  Provider  from '../models/provider.js';
+//import  Provider  from '../models/provider.js';
 
 export const TransactionRouter = express.Router();
 

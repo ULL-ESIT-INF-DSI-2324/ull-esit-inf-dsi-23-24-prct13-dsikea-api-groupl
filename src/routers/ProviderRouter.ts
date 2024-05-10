@@ -1,13 +1,12 @@
 import express, { Request, Response } from 'express';
-import initialize from '../models/provider.js'; // Ajusta la ruta y el nombre del archivo según sea necesario
+import { Provider } from "../models/provider.js";
 
 export const ProvidersRouter = express.Router();
 
 // Crear un nuevo proveedor
 ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
+  const provider = new Provider(req.body);
   try {
-    const ProviderModel = await initialize();
-    const provider = new ProviderModel(req.body);
     await provider.save();
     res.status(201).send(provider);
   } catch (error) {
@@ -18,8 +17,7 @@ ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
 // Leer todos los proveedores
 ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
   try {
-    const ProviderModel = await initialize();
-    const providers = await ProviderModel.find();
+    const providers = await Provider.find();
     res.send(providers);
   } catch (error) {
     res.status(500).send(error);
@@ -30,8 +28,7 @@ ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
 ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
-      const ProviderModel = await initialize();
-      const provider = await ProviderModel.findOne({ cif });
+      const provider = await Provider.findOne({ cif });
       if (!provider) {
         return res.status(404).send({ message: 'Proveedor no encontrado' });
       }
@@ -45,8 +42,7 @@ ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
 ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
-      const ProviderModel = await initialize();
-      const provider = await ProviderModel.findById(id);
+      const provider = await Provider.findById(id);
       if (!provider) {
         return res.status(404).send({ message: 'Proveedor no encontrado' });
       }
@@ -58,26 +54,47 @@ ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => 
 
 
 // Actualizar un proveedor por CIF
-ProvidersRouter.put('/providers/:cif', async (req: Request, res: Response) => {
-    const cif = req.params.cif;
-    try {
-      const ProviderModel = await initialize();
-      const provider = await ProviderModel.findOneAndUpdate({ cif }, req.body, { new: true });
-      if (!provider) {
-        return res.status(404).send({ message: 'Proveedor no encontrado' });
-      }
+ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
+  if (!req.query.cif) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un CIF',});
+  }
+
+  const Updates = ['name', 'contact', 'address', 'email', 'mobilePhone'];
+  const UpdateExistente = Object.keys(req.body);
+  const isValidUpdate = UpdateExistente.every((update) => Updates.includes(update));
+
+  if (!isValidUpdate) {
+    return res.status(400).send({
+        error: 'Actualización no permitida',
+    });
+  }
+
+  try {
+    const provider = await Provider.findOneAndUpdate(
+        { cif: req.query.cif.toString() },
+        req.body,
+        { new: true, runValidators: true }
+    );
+
+    if (provider) {
       return res.send(provider);
-    } catch (error) {
-      return res.status(400).send(error);
     }
-  });
+    return res.status(404).send();
+  } catch (error) {
+      return res.status(500).send(error);
+  }
+});
 
 // Borrar un proveedor por CIF
 ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) => {
+  if (!req.query.cif) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un CIF',});
+  }
     const cif = req.params.cif;
     try {
-      const ProviderModel = await initialize();
-      const provider = await ProviderModel.findOneAndDelete({ cif });
+      const provider = await Provider.findOneAndDelete({ cif });
       if (!provider) {
         return res.status(404).send({ message: 'Proveedor no encontrado' });
       }
@@ -89,10 +106,13 @@ ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) =>
 
 // Borrar un proveedor por ID
 ProvidersRouter.delete('/providers/id/:id', async (req: Request, res: Response) => {
+  if (!req.query.id) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un ID',});
+  }
     const id = req.params.id;
     try {
-      const ProviderModel = await initialize();
-      const provider = await ProviderModel.findByIdAndDelete(id);
+      const provider = await Provider.findByIdAndDelete(id);
       if (!provider) {
         return res.status(404).send({ message: 'Proveedor no encontrado' });
       }
