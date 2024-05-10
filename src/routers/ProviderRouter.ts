@@ -105,7 +105,7 @@ ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) =>
 });
 
 // Borrar un proveedor por ID
-ProvidersRouter.delete('/providers/id/:id', async (req: Request, res: Response) => {
+ProvidersRouter.delete('/providers/:id', async (req: Request, res: Response) => {
   if (!req.query.id) {
     return res.status(400).send({
       error: 'Se debe proporcionar un ID',});
