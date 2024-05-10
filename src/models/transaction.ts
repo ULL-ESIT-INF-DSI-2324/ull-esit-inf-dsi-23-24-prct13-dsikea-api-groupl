@@ -11,8 +11,8 @@ interface ITransaction extends Document {
     furniture: typeof furnitureSchema,
     quantity: Number,
   }>,
-  customer?: typeof customerSchema;
-  provider?: typeof providerSchema;
+  customer: typeof customerSchema;
+  provider: typeof providerSchema;
   price: Number;
   timestamp: Date;
 }

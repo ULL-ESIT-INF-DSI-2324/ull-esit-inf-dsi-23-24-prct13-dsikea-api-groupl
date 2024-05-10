@@ -72,6 +72,26 @@ if (req.query.nif) {
   }
 });
 
+TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
+//para crear una transaccion se debe comprobar que el nif existe en la base de datos de clientes y proveedores, se debe de comprobar que el id de los muebles existen en la base de datos de muebles además de que hay stock de los mismos
+  try {
+    const transaction = new Transaction(req.body);
+    const customer = new Customer(req.body.customer);
+    const provider = new Provider(req.body.provider);
+    const furniture = new Furniture(req.body.furniture);
+    await customer.save();
+    await provider.save();
+    await furniture.save();
+    if (furniture.stock < req.body.furniture.quantity) {
+      return res.status(404).send({ message: 'No hay suficiente stock' });
+    }
+    await transaction.save();
+    return res.status(201).send(transaction);
+  } catch (error) {
+    return res.status(404).send({message: 'No se ha podido crear la transacción'});
+  }
+} 
+);
 
 
 
