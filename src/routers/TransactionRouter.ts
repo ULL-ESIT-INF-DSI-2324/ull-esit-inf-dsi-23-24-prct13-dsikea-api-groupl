@@ -93,6 +93,46 @@ TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
 } 
 );
 
+TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response) => {
+  try {
+    // Validar las actualizaciones permitidas
+    const updates = Object.keys(req.body);
+    const allowedFields = ['type', 'furniture', 'customer', 'provider', 'price', 'timestamp'];
+    const isUpdateAllowed = updates.every((update) => allowedFields.includes(update));
+    if (!isUpdateAllowed) {
+      return res.status(400).send({ error: 'No se pudo realizar la actualización' });
+    }
+
+    // Obtener el ID de la transacción y los campos de actualización
+    const id = req.params.id;
+    const updatedFields: { [key: string]: any } = {};
+    for (const key of updates) {
+      updatedFields[key] = req.body[key];
+    }
+
+    // Actualizar la transacción
+    const transaction = await Transaction.findOne({ _id: id });
+    if (!transaction) {
+      return res.status(404).send({ error: 'La transacción no existe' });
+    }
+
+    for (const key in updatedFields) {
+      // Asegurar que la clave es válida y hacer una aserción de tipo
+      if (Object.prototype.hasOwnProperty.call(updatedFields, key)) {
+        (transaction as any)[key] = updatedFields[key];
+      }
+    }
+    await transaction.save();
+
+    // Manejar la respuesta
+    return res.status(200).send(transaction);
+  } catch (error) {
+    // Manejar errores
+    return res.status(500).send({ error: 'Hubo un error tratando de modificar la transacción' });
+  }
+});
+
+
 
 
 /*
