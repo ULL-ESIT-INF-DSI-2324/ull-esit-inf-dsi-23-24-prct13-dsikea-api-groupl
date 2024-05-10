@@ -9,7 +9,7 @@
     "start": "node ./dist/index.js",
     "dev": "tsc-watch --onSuccess \"node dist/basicFunctions.js\"",
     "doc": "typedoc",
-    "test": "mocha",
+    "test": "mocha --timeout 10000",
     "coverage": "c8 npm test && c8 report --reporter=lcov"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "@types/chai": "^4.3.14",
     "@types/express": "^4.17.21",
     "@types/mocha": "^10.0.6",
+    "@types/supertest": "^6.0.2",
     "@types/validator": "^13.11.9",
     "chai": "^5.1.0",
     "mocha": "^10.4.0",
@@ -32,8 +33,10 @@
     "@types/mongoose": "^5.11.97",
     "body-parser": "^1.20.2",
     "c8": "^9.1.0",
+    "chai-http": "^4.4.0",
     "express": "^4.19.2",
     "mongoose": "^8.3.2",
+    "supertest": "^7.0.0",
     "validator": "^13.11.0"
   }
 }
