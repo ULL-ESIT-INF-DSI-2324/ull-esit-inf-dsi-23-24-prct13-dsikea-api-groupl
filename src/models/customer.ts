@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
 import validator from 'validator';
+<<<<<<< HEAD
 
 
 // haz un validador de NIF con regex
@@ -8,6 +9,8 @@ function validarNIF(nif: string): boolean {
     const regex = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
     return regex.test(nif);
 }
+=======
+>>>>>>> ed7264d075d9d5d9536a08bfb3f1c6c44fe339f6
 
 
 // Definimos la interfaz para el modelo Customer
