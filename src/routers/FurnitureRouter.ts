@@ -50,9 +50,9 @@ FurnitureRouter.get('/furnitures', async (req: Request, res: Response) => {
 
 });
   
-/*
+
 // Leer un mueble por ID
-FurnitureRouter.get('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const furniture = await Furniture.findById(id);
@@ -65,6 +65,7 @@ FurnitureRouter.get('/furnitures/id/:id', async (req: Request, res: Response) =>
     }
 }); 
 
+/*
 // Actualizar un mueble por ID
 FurnitureRouter.put('/furnitures/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
