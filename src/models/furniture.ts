@@ -53,7 +53,7 @@ export const furnitureSchema = new Schema({
 const Furniture = model<IFurniture>("Furniture", furnitureSchema);
 
 // Creación de un nuevo mueble
- const newFurniture: IFurniture = new Furniture({
+ /* const newFurniture: IFurniture = new Furniture({
   name: 'Silla de madera',
   description: 'Una silla fabricada en madera de roble',
   material: 'wood',
@@ -74,7 +74,7 @@ newFurniture.save()
   })
   .catch((error: Error) => {
     console.error('Error al crear el nuevo mueble:', error);
-  }); 
+  });  */
 
 // Exportamos el modelo Customer
 export default Furniture;
