@@ -6,7 +6,7 @@ import Customer from '../src/models/customer.js';
 const firstCustomer = {
   nombre: "Marta",
   apellido: "Díaz",
-  nif: '929959978Z',
+  nif: '51177772B',
   direccion: 'Calle Principal 123',
   telefono: '123456789'
 };
@@ -14,7 +14,7 @@ const firstCustomer = {
 const secondCustomer = {
   nombre: "Alicia",
   apellido: "Hernández",
-  nif: '98765432A',
+  nif: '51177772X"',
   direccion: 'Calle Secundaria 456',
   telefono: '987654321'
 };
