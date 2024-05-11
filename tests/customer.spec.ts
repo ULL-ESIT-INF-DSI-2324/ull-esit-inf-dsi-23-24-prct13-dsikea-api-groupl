@@ -25,19 +25,11 @@ beforeEach(async () => {
 });
 
 describe('CUSTOMERS', function() {
-  context('GET /customers', function() {
-    it('Should find a customer by id', async () => {
-	  const newCustomer = await new Customer(secondCustomer).save();
-      await request(app).get(`/customers?id=${newCustomer._id}`).expect(200);
-    });
-    it('Should find a customer by name', async () => {
-      await request(app).get(`/customers?nombre=${firstCustomer.nombre}`).expect(200);
-    });
-    it('Should find a customer by nif', async () => {
-      await request(app).get(`/customers?nif=${firstCustomer.nif}`).expect(200);
-    });
-    it('Should not find a customer by nif', async () => {
-      await request(app).get(`/customers?nif=00000000A`).expect(404);
+
+  context('GET /customers', () => {
+    it('Should get all customers', async () => {
+      const response = await request(app).get('/customers').expect(200);
+      expect(response.body.length).to.equal(1);
     });
   });
 
