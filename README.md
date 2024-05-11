@@ -297,6 +297,8 @@ const Transaction = model<ITransaction>("Transaction", transactionSchema);
 En conclusión, la práctica nos brindó la oportunidad de aplicar nuestros conocimientos en el desarrollo de sistemas informáticos mediante la implementación de un API REST para una tienda de muebles. Utilizando Node.js y Express, logramos diseñar un sistema completo que permite la gestión eficiente de clientes, proveedores, inventario de muebles y transacciones. A lo largo del proceso, aprendimos a programar defensivamente, documentar nuestras decisiones de diseño y realizar pruebas exhaustivas para garantizar la calidad del código. Esta experiencia nos ha preparado para enfrentar desafíos similares en proyectos futuros y nos ha brindado una comprensión más profunda del desarrollo de sistemas informáticos en el mundo real.
 
 ## Bibliografía ##
+> Práctica 13 - DSIkea: API REST con Node/Express. (n.d.). Desarrollo De Sistemas Informáticos - Grado En Ingeniería Informática - ULL. https://ull-esit-inf-dsi-2324.github.io/prct13-DSIkea-api/
+
 > Cloud application hosting for developers | Render. (n.d.). Cloud Application Hosting for Developers | Render. https://dashboard.render.com/
 
 > Projects | Cloud: MongoDB Cloud. (n.d.). https://cloud.mongodb.com/v2#/org/663b4e5f66e117266a136106/projects
