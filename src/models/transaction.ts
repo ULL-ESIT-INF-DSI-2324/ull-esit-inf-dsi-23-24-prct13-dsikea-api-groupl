@@ -58,6 +58,47 @@ export const transactionSchema = new Schema({
 
 // Creación del modelo de transacción
 const Transaction = model<ITransaction>("Transaction", transactionSchema);
+/* 
+// Creación de la primera transacción
+const transaction1: ITransaction = new Transaction({
+  type: 'Compra',
+  furniture: [{
+    furnitureId: '<ID del mueble comprado>',
+    quantity: 5, // Cantidad de muebles comprados
+  }],
+  customer: '123',
+  provider: '1',
+  timestamp: new Date(),
+  price: 1500, // Precio total de la compra
+});
 
+// Creación de la segunda transacción
+const transaction2: ITransaction = new Transaction({
+  type: 'Venta',
+  furniture: [{
+    furnitureId: '<ID del mueble vendido>',
+    quantity: 2, // Cantidad de muebles vendidos
+  }],
+  customer: '321',
+  provider: '2',
+  timestamp: new Date(),
+  price: 800, // Precio total de la venta
+});
 
+// Guardamos las nuevas transacciones en la base de datos
+transaction1.save()
+  .then((savedTransaction1: ITransaction) => {
+    console.log('Nueva transacción creada:', savedTransaction1);
+  })
+  .catch((error: Error) => {
+    console.error('Error al crear la nueva transacción:', error);
+  });
+
+transaction2.save()
+  .then((savedTransaction2: ITransaction) => {
+    console.log('Nueva transacción creada:', savedTransaction2);
+  })
+  .catch((error: Error) => {
+    console.error('Error al crear la nueva transacción:', error);
+  }); */
 export default Transaction;

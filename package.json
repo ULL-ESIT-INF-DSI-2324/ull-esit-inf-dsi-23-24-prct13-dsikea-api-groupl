@@ -7,9 +7,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/index.js",
-    "dev": "tsc-watch --onSuccess \"node dist/basicFunctions.js\"",
+    "dev": "tsc-watch --onSuccess \"env-cmd -f ./config/dev.env node dist/index.js\"",
     "doc": "typedoc",
-    "test": "mocha --timeout 10000",
+    "test": "mocha",
     "coverage": "c8 npm test && c8 report --reporter=lcov"
   },
   "keywords": [],
@@ -22,6 +22,7 @@
     "@types/supertest": "^6.0.2",
     "@types/validator": "^13.11.9",
     "chai": "^5.1.0",
+    "env-cmd": "^10.1.0",
     "mocha": "^10.4.0",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
