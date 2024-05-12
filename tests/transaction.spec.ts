@@ -1,4 +1,3 @@
-/*
  import request from 'supertest';
  import { expect } from 'chai';
  import { app } from '../src/index.js';
@@ -244,6 +243,6 @@ describe('DELETE /transactions/:id', () => {
   });
 
 });
-*/
+
 
 
