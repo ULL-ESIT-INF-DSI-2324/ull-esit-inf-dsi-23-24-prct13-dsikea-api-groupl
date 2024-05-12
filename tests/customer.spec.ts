@@ -57,7 +57,7 @@ describe('CUSTOMERS', function() {
       await request(app).post('/customers').send({
         nombre: "Bob",
         apellido: "Johnson",
-        nif: firstCustomer.nif,
+        nif: '51177772B',
         direccion: 'Avenida Principal 789',
         telefono: '543216789'
       }).expect(400);
