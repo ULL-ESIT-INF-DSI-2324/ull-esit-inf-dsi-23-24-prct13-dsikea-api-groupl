@@ -1,4 +1,4 @@
-/*import request from 'supertest';
+import request from 'supertest';
 import { expect } from 'chai';
 import { app } from '../src/index.js';
 import Customer from '../src/models/customer.js';
@@ -7,40 +7,55 @@ import Transaction from '../src/models/transaction.js';
 import Furniture from '../src/models/furniture.js';
 
 const firstCustomer = {
-  nombre: "Marta",
-  apellido: "Díaz",
-  nif: '51177772B',
+  nombre: "Juan",
+  apellido: "Pérez",
+  nif: '76524168K',
   direccion: 'Calle Principal 123',
   telefono: '123456789'
 };
-
 const secondCustomer = {
-  nombre: "Alicia",
+  nombre: "Samantha",
   apellido: "Hernández",
-  nif: '51177772X',
+  nif: '42876542A',
   direccion: 'Calle Secundaria 456',
   telefono: '987654321'
 };
 
 const firstProvider = {
-  nombre: "Proveedor1",
-  nif: '12345678A',
-  direccion: 'Calle Proveedor 1',
-  telefono: '111111111'
+  name: "Pepito",
+  contact: "Contact1",
+  address: "Address1",
+  cif: '987654321',
+  email: 'pepito@gmail.com',
+  mobilePhone: 123456789
 };
 
 const firstFurniture = {
   name: "Mesa",
   description: "Mesa de madera",
-  price: 100,
-  stock: 10
+  material: "wood",
+  dimensions: {
+    length: 100,
+    width: 50,
+    height: 75
+  },
+  price: 150,
+  stock: 10,
+  color: "brown"
 };
 
 const secondFurniture = {
   name: "Silla",
-  description: "Silla de metal",
+  description: "Silla de plástico",
+  material: "plastic",
+  dimensions: {
+    length: 80,
+    width: 40,
+    height: 90
+  },
   price: 50,
-  stock: 5
+  stock: 20,
+  color: "white"
 };
 
 let firstCustomerId:string , secondCustomerId:string, firstProviderId:string, firstFurnitureId:string, secondFurnitureId:string;
@@ -76,19 +91,20 @@ describe('TRANSACTIONS', function() {
   }).timeout(3000);
 
   context('POST /transactions', () => {
-    it('Should successfully create a new transaction', async () => {
-      await request(app).post('/transactions').send({
+    it('should create a new transaction Sale To Customer', async () => {
+      const furniture = await new Furniture(firstFurniture).save();
+
+      request(app).post('/transactions').send({
         type: "Compra",
-        furniture: [{
-          furnitureId: firstFurnitureId,
-          quantity: 2
-        }],
-        customer: firstCustomerId,
-        provider: firstProviderId,
-        price: 200,
-        timestamp: new Date()
-      }).expect(201);
-    }).timeout(3000);
+          furniture: [
+            {
+              furnitureId: firstFurnitureId,
+              quantity: 2
+            }],
+          customer: secondCustomerId,
+          price: 200
+        }).expect(201);
+    });
     it('Should not create a new transaction. Insufficient stock', async () => {
       await request(app).post('/transactions').send({
         type: "Venta",
@@ -125,11 +141,12 @@ describe('TRANSACTIONS', function() {
   });
 
   context('DELETE /transactions', () => {
+
     it('Should successfully delete a transaction', async () => {
       const newTransaction = await new Transaction({
         type: "Compra",
         furniture: [{
-          furnitureId: secondFurnitureId,
+          furnitureId: firstFurnitureId,
           quantity: 1
         }],
         customer: firstCustomerId,
@@ -137,10 +154,13 @@ describe('TRANSACTIONS', function() {
         price: 50,
         timestamp: new Date()
       }).save();
+      console.log('New transaction:', newTransaction);
       await request(app).delete(`/transactions/${newTransaction._id}`).expect(200);
     }).timeout(3000);
+
+
     it('Should not delete a transaction. Invalid id', async () => {
       await request(app).delete('/transactions/123').expect(500);
     }).timeout(3000);
   });
-}); */
+}); 
