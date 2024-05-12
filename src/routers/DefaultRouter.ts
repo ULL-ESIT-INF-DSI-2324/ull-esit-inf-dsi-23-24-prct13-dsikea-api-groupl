@@ -2,6 +2,6 @@ import express from 'express';
 
 export const defaultRouter = express.Router();
 
-defaultRouter.use('*', (_, res) => {
-  res.status(501).send();
+defaultRouter.all('*', async (req, res) => {
+  res.status(501).send({ message: 'Not Implemented' });
 });
