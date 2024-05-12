@@ -26,6 +26,7 @@ beforeEach(async () => {
 describe('CUSTOMERS', function() {
   context('GET /customers', () => {
     it('Should get all customers', async () => {
+      
       await new Customer(firstCustomer).save();
       const response = await request(app).get('/customers').expect(200);
       expect(response.body.length).to.equal(1);
