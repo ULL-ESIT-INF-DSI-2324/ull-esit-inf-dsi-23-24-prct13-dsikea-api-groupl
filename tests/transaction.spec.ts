@@ -1,4 +1,4 @@
-/* import request from 'supertest';
+/*import request from 'supertest';
 import { expect } from 'chai';
 import { app } from '../src/index.js';
 import Customer from '../src/models/customer.js';
@@ -43,7 +43,7 @@ const secondFurniture = {
   stock: 5
 };
 
-let firstCustomerId, secondCustomerId, firstProviderId, firstFurnitureId, secondFurnitureId;
+let firstCustomerId:string , secondCustomerId:string, firstProviderId:string, firstFurnitureId:string, secondFurnitureId:string;
 
 beforeEach(async () => {
   await Customer.deleteMany({});

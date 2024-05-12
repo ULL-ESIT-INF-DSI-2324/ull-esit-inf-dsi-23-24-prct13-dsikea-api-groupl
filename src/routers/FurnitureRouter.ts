@@ -73,17 +73,16 @@ FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
 
 // Actualizar un mueble por ID
 FurnitureRouter.patch('/furnitures/id/:id', async (req: Request, res: Response) => {
-   // Se actualiza el mueble por id, el mueble se encuentra en el body
-    const id = req.params.id;
-    try {
-      const furniture = await Furniture.findByIdAndUpdate({id}, req.body, { new: true });
-      if (!furniture) {
-        return res.status(404).send({ message: 'Mueble no encontrado' });
-      }
+  try {
+    const furniture = await Furniture.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (furniture) {
       return res.send(furniture);
-    } catch (error) {
-      return res.status(404).send({ message: 'fallo en la busqueda del id' });
+    } else {
+      return res.status(404).send('Furniture not found');
     }
+  } catch (err) {
+    return res.status(400).send(err);
+  }
 });
   
 
@@ -105,51 +104,39 @@ FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response)
   
 // Actualizar un mueble por query string (campos flexibles)
 FurnitureRouter.patch('/furnitures/', async (req: Request, res: Response) => {
-  //si en el query string se encuentra el parámetro id se busca por id y se actualiza con el mueble nuevo
-  if (req.query.id) {
-    const id = req.query.id;
-    try {
-      const furniture = await Furniture.findByIdAndUpdate({id}, req.body, { new: true });
-      if (!furniture) {
-        return res.status(404).send({ message: 'Mueble no encontrado' });
-      }
-      return res.send(furniture);
-    } catch (error) {
-      return res.status(404).send({message: 'fallo en la busqueda del id'});
+  const { name, id, material, ...updates } = req.query; // Obtener los campos de la consulta
+  let query = {}; // Inicializar el objeto de consulta
+
+  // Construir la consulta en función de los campos proporcionados
+  if (name) {
+    query = { ...query, name: name.toString() };
+  }
+  if (id) {
+    query = { ...query, _id: id.toString() };
+  }
+  if (material) {
+    query = { ...query, material: material.toString() };
+  }
+
+  // Verificar si hay campos para actualizar
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).send({ error: 'No updates provided' }); // Si no hay campos para actualizar, devolver un error 400
+  }
+
+  try {
+    const furniture = await Furniture.findOneAndUpdate(query, updates, { new: true, runValidators: true }); // Actualizar el mueble según la consulta y los campos proporcionados
+    if (!furniture) {
+      return res.status(404).send('Furniture not found'); // Si no se encuentra el mueble, devolver un error 404
     }
-  } // si se encuentra el parámetro nombre se busca por nombre y se actualiza con el mueble nuevo
-  else if (req.query.nombre) {
-    const nombre = req.query.nombre;
-    try {
-      const furniture = await Furniture.findOneAndUpdate({ nombre }, req.body, { new: true });
-      if (!furniture) {
-        return res.status(404).send({ message: 'Mueble no encontrado' });
-      }
-      return res.send(furniture);
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  } // si se encuentra el parámetro material se busca por material y se actualiza con el mueble nuevo
-  else if (req.query.material) {
-    const material = req.query.material;
-    try {
-      const furniture = await Furniture.findOneAndUpdate({ material }, req.body, { new: true });
-      if (!furniture) {
-        return res.status(404).send({ message: 'Mueble no encontrado' });
-      }
-      return res.send(furniture);
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  } // si no se encuentra ningun parametro se devuelve un error
-  else {
-    return res.status(404).send({message: 'No se ha encontrado el mueble'});
+    return res.send(furniture); // Enviar el mueble actualizado como respuesta
+  } catch (error) {
+    return res.status(400).send(error); // Si ocurre algún error, devolver un error 400
   }
 });
   
 
 // Borrar un mueble por query string (campos flexibles)
-FurnitureRouter.delete('/furnitures/query', async (req: Request, res: Response) => {
+FurnitureRouter.delete('/furnitures', async (req: Request, res: Response) => {
   //si en el query string se encuentra el parámetro id se busca por id y se actualiza con el mueble nuevo
   if (req.query.id) {
     const id = req.query.id;

@@ -85,14 +85,15 @@ describe('PROVIDERS', function() {
   context('DELETE /providers', () => {
     it('Should successfully delete a provider by cif', async () => {
       const newProvider = await new Provider(secondProvider).save();
-      await request(app).delete(`/providers/${newProvider.cif}`).expect(200);
+      await request(app).delete(`/providers/cif/${newProvider.cif}`).expect(200);
     });
     it('Should not delete a provider. Invalid cif', async () => {
-      await request(app).delete('/providers/123').expect(404);
+      await request(app).delete('/providers/cif/123').expect(404);
     });
     it('Should successfully delete a provider by id', async () => {
       const newProvider = await new Provider(secondProvider).save();
-      await request(app).delete(`/providers/${newProvider.id}`).expect(200);
+      console.log(`/providers/${newProvider.id}`);
+      await request(app).delete(`/providers/id/${newProvider.id}`).expect(200);
     });
   });
 });

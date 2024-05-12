@@ -87,7 +87,7 @@ ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
 });
 
 // Borrar un proveedor por CIF
-ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) => {
+ProvidersRouter.delete('/providers/cif/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
       const provider = await Provider.findOneAndDelete({ cif });
@@ -101,7 +101,7 @@ ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) =>
 });
 
 // Borrar un proveedor por ID
-ProvidersRouter.delete('/providers/:id', async (req: Request, res: Response) => {
+ProvidersRouter.delete('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
       const provider = await Provider.findByIdAndDelete(id);
