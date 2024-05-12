@@ -2,14 +2,20 @@ import mongoose, { Schema, Document, model } from 'mongoose';
 import { Request, Response } from 'express';
 import validator from 'validator';
 
-// haz un validador de NIF con regex
+/**
+ * Función para validar el NIF utilizando una expresión regular
+ * @param nif Número de identificación fiscal (sin la letra)
+ * @returns Devuelve true si el NIF es válido, de lo contrario devuelve false
+ */
 function validarNIF(nif: string): boolean {
     const regex = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
     return regex.test(nif);
 }
 
 
-// Definimos la interfaz para el modelo Customer
+/**
+ * Interfaz que define la estructura del cliente en la base de datos.
+ */
 interface ICustomer extends Document {
     nombre: string;
     apellido: string;
@@ -18,7 +24,9 @@ interface ICustomer extends Document {
     telefono: string;
 }
 
-// Definimos el esquema del modelo Customer
+/**
+ * Esquema de Mongoose que define la estructura del modelo de cliente.
+ */
 export const customerSchema: Schema = new Schema({
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
@@ -37,7 +45,9 @@ export const customerSchema: Schema = new Schema({
 });
 
 
-// Creamos el modelo Customer con model<ICustomer>("Customer", customerSchema)
+/**
+ * Modelo de Mongoose para el cliente.
+ */
 const Customer = model<ICustomer>("Customer", customerSchema);
 
 // Exportamos el modelo Customer

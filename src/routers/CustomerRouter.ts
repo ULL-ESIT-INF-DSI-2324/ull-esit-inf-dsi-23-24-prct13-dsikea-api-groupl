@@ -3,7 +3,12 @@ import Customer from '../models/customer.js';
 
 export const CustomerRouter = express.Router();
 
-// Crear un nuevo cliente
+/**
+ * Método para crear un nuevo cliente.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente creado
+ */
 CustomerRouter.post('/customers', async (req: Request, res: Response) => {
   try {
     const customer = new Customer(req.body);
@@ -14,7 +19,12 @@ CustomerRouter.post('/customers', async (req: Request, res: Response) => {
   }
 });
 
-// Leer todos los clientes
+/**
+ * Método para leer todos los clientes o buscar por NIF si se proporciona.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - Los clientes encontrados
+ */
 CustomerRouter.get('/customers', async (req: Request, res: Response) => {
   // si en el query string se encuentra el parámetro nif se busca por nif
   if (req.query.nif) {
@@ -40,7 +50,12 @@ CustomerRouter.get('/customers', async (req: Request, res: Response) => {
 
 });
 
-// Leer un cliente por ID
+/**
+ * Método para leer un cliente por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente encontrado
+ */
 CustomerRouter.get('/customers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
@@ -55,7 +70,12 @@ CustomerRouter.get('/customers/id/:id', async (req: Request, res: Response) => {
 });
   
 
-// Actualizar un cliente por NIF
+/**
+ * Método para actualizar un cliente por su NIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente actualizado
+ */
 CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
    // si en el query string se encuentra el parámetro nif se busca por nif y se actualiza con el cliente nuevo
   if (req.query.nif) {
@@ -78,7 +98,12 @@ CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
 
 });
 
-// Actualizar un cliente por ID
+/**
+ * Método para actualizar un cliente por su NIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente actualizado
+ */
 CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
   // Si en el query string se encuentra el parámetro nif, se busca por nif y se actualiza con el cliente nuevo
   if (req.query.nif) {
@@ -109,7 +134,12 @@ CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
   }
 });
 
-// Borrar un cliente por NIF
+/**
+ * Método para borrar un cliente por su NIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente eliminado
+ */
 CustomerRouter.delete('/customers/nif/:nif', async (req: Request, res: Response) => {
   const nif = req.params.nif;
   try {
@@ -123,7 +153,12 @@ CustomerRouter.delete('/customers/nif/:nif', async (req: Request, res: Response)
   }
 });
 
-// Borrar un cliente por ID
+/**
+ * Método para borrar un cliente por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El cliente eliminado
+ */
 CustomerRouter.delete('/customers/id/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
   try {

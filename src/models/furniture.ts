@@ -1,6 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
 
-// Definición del esquema
+/**
+ * Interfaz que define la estructura de un mueble en la base de datos.
+ */
 interface IFurniture extends Document {
   name: string;
   description: string;
@@ -15,7 +17,9 @@ interface IFurniture extends Document {
   color: string;
 }
 
-// Creación del esquema de la base de datos
+/**
+ * Esquema de Mongoose que define la estructura de un mueble en la base de datos.
+ */
 export const furnitureSchema = new Schema({
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },

@@ -3,7 +3,12 @@ import Provider  from "../models/provider.js";
 
 export const ProvidersRouter = express.Router();
 
-// Crear un nuevo proveedor
+/**
+ * Ruta para crear un nuevo proveedor.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor creado
+ */
 ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
   const provider = new Provider(req.body);
   try {
@@ -14,7 +19,12 @@ ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
   }
 });
 
-// Leer todos los proveedores
+/**
+ * Ruta para leer todos los proveedores.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - Los proveedores encontrados
+ */
 ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
   try {
     const providers = await Provider.find();
@@ -24,7 +34,12 @@ ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
   }
 });
 
-// Leer un proveedor por CIF
+/**
+ * Ruta para leer un proveedor por su CIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor encontrado
+ */
 ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
@@ -38,7 +53,12 @@ ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
     }
   });
 
-// Leer un proveedor por ID
+/**
+ * Ruta para leer un proveedor por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor encontrado
+ */
 ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
@@ -53,7 +73,12 @@ ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => 
   });
 
 
-// Actualizar un proveedor por CIF
+/**
+ * Ruta para actualizar un proveedor por su CIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor actualizado
+ */
 ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
   if (!req.query.cif) {
     return res.status(400).send({
@@ -86,7 +111,12 @@ ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
   }
 });
 
-// Borrar un proveedor por CIF
+/**
+ * Ruta para borrar un proveedor por su CIF.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor eliminado
+ */
 ProvidersRouter.delete('/providers/cif/:cif', async (req: Request, res: Response) => {
     const cif = req.params.cif;
     try {
@@ -100,7 +130,12 @@ ProvidersRouter.delete('/providers/cif/:cif', async (req: Request, res: Response
     }
 });
 
-// Borrar un proveedor por ID
+/**
+ * Ruta para borrar un proveedor por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El proveedor eliminado
+ */
 ProvidersRouter.delete('/providers/id/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {

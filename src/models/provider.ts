@@ -1,7 +1,9 @@
 import { Document, connect, model, Schema } from "mongoose";
 import validator from 'validator';
 
-// Interfaz para el modelo de proveedores
+/**
+ * Interfaz que define la estructura de un proveedor en la base de datos.
+ */
 interface IProvider extends Document {
   name: string;
   contact: string;
@@ -11,7 +13,9 @@ interface IProvider extends Document {
   mobilePhone?: number;
 }
 
-// Esquema para el modelo de proveedores
+/**
+ * Esquema de Mongoose que define la estructura de un proveedor en la base de datos.
+ */
 export const providerSchema = new Schema({
   name: { type: String, required: true, trim: true },
   contact: { type: String, required: true, trim: true },

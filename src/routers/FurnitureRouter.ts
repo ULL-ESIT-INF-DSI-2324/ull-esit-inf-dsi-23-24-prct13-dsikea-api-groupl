@@ -3,7 +3,12 @@ import Furniture from '../models/furniture.js'; // Ajusta la importación según
 
 export const FurnitureRouter = express.Router();
 
-// Crear un nuevo mueble
+/**
+ * Ruta para crear un nuevo mueble.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble creado
+ */
 FurnitureRouter.post('/furnitures', async (req: Request, res: Response) => {
   try {
     const furniture = new Furniture(req.body);
@@ -14,7 +19,12 @@ FurnitureRouter.post('/furnitures', async (req: Request, res: Response) => {
   }
 });
 
-// Leer todos los muebles
+/**
+ * Ruta para leer todos los muebles o buscar por material, nombre o descripción si se proporciona en el query string.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - Los muebles encontrados
+ */
 FurnitureRouter.get('/furnitures', async (req: Request, res: Response) => {
    //si en el query se encuentra el parámetro material o nombre o descripcion se busca por esos campos
     if (req.query.material || req.query.nombre || req.query.descripcion) {
@@ -56,7 +66,12 @@ FurnitureRouter.get('/furnitures', async (req: Request, res: Response) => {
 });
   
 
-// Leer un mueble por ID
+/**
+ * Ruta para leer un mueble por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble encontrado
+ */
 FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
@@ -71,7 +86,12 @@ FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
 }); 
 
 
-// Actualizar un mueble por ID
+/**
+ * Ruta para actualizar un mueble por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble actualizado
+ */
 FurnitureRouter.patch('/furnitures/:id', async (req: Request, res: Response) => {
   try {
     const furniture = await Furniture.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -86,7 +106,12 @@ FurnitureRouter.patch('/furnitures/:id', async (req: Request, res: Response) => 
 });
   
 
-// Borrar un mueble por ID
+/**
+ * Ruta para borrar un mueble por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble eliminado
+ */
 FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response) => {
 // buscar un mueble por id y si existe eliminarlo
     const id = req.params.id;
@@ -102,7 +127,12 @@ FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response)
 });
   
   
-// Actualizar un mueble por query string (campos flexibles)
+/**
+ * Ruta para actualizar un mueble por query string (campos flexibles).
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble actualizado
+ */
 FurnitureRouter.patch('/furnitures', async (req: Request, res: Response) => {
   if(req.query.nombre){
     const name:string = req.query.nombre.toString();
@@ -134,7 +164,12 @@ FurnitureRouter.patch('/furnitures', async (req: Request, res: Response) => {
 });
   
 
-// Borrar un mueble por query string (campos flexibles)
+/**
+ * Ruta para borrar un mueble por query string (campos flexibles).
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - El mueble eliminado
+ */
 FurnitureRouter.delete('/furnitures', async (req: Request, res: Response) => {
   //si en el query string se encuentra el parámetro id se busca por id y se actualiza con el mueble nuevo
   if (req.query.id) {

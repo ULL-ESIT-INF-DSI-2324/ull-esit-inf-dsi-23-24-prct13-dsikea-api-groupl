@@ -6,7 +6,12 @@ import  Furniture  from '../models/furniture.js';
 import  Provider  from '../models/provider.js';
 
 export const TransactionRouter = express.Router();
-
+/**
+ * Ruta para obtener una transacción por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - La transacción encontrada
+ */
 TransactionRouter.get('/transactions/:id', async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
@@ -21,6 +26,12 @@ TransactionRouter.get('/transactions/:id', async (req: Request, res: Response) =
 });
 
 
+/**
+ * Ruta para obtener transacciones filtradas según diferentes parámetros.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - Las transacciones encontradas
+ */
 
 TransactionRouter.get('/transactions', async(req: Request, res: Response) => {
 
@@ -86,6 +97,12 @@ if (req.query.nif) {
   }
 });
 
+/**
+ * Ruta para crear una nueva transacción.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - La transacción creada
+ */
 TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
   // Extraer datos de la solicitud
   const { type, furniture, customer, provider, price, timestamp } = req.body;
@@ -122,7 +139,12 @@ TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
   }
 });
 
-
+/**
+ * Ruta para actualizar una transacción por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - La transacción actualizada
+ */
 TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response) => {
   try {
     // Validar las actualizaciones permitidas
@@ -162,7 +184,12 @@ TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response)
   }
 });
 
-
+/**
+ * Ruta para eliminar una transacción por su ID.
+ * @param req - La solicitud HTTP
+ * @param res - La respuesta HTTP
+ * @returns - Mensaje de éxito o error
+ */
 TransactionRouter.delete('/transactions/:id', async (req: Request, res: Response) => {
   try {
     // Filtrado de la transacción

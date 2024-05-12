@@ -1,6 +1,16 @@
 {
     "entryPoints": [
-      "./src/basicFunctions.ts"
+      "./src/models/customer.ts",
+      "./src/models/furniture.ts",
+      "./src/models/provider.ts",
+      "./src/models/transaction.ts",
+      "./src/routers/CustomerRouter.ts",
+      "./src/routers/DefaultRouter.ts",
+      "./src/routers/FurnitureRouter.ts",
+      "./src/routers/ProviderRouter.ts",
+      "./src/routers/TransactionRouter.ts",
+      "./src/index.ts",
+      "./src/database/mongoose.ts"
     ],
     "out": "./docs"
   }
