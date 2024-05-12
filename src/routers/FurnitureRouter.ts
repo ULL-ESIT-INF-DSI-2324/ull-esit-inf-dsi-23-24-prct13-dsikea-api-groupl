@@ -72,7 +72,7 @@ FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
 
 
 // Actualizar un mueble por ID
-FurnitureRouter.patch('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.patch('/furnitures/:id', async (req: Request, res: Response) => {
   try {
     const furniture = await Furniture.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (furniture) {
@@ -103,34 +103,33 @@ FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response)
   
   
 // Actualizar un mueble por query string (campos flexibles)
-FurnitureRouter.patch('/furnitures/', async (req: Request, res: Response) => {
-  const { name, id, material, ...updates } = req.query; // Obtener los campos de la consulta
-  let query = {}; // Inicializar el objeto de consulta
-
-  // Construir la consulta en función de los campos proporcionados
-  if (name) {
-    query = { ...query, name: name.toString() };
-  }
-  if (id) {
-    query = { ...query, _id: id.toString() };
-  }
-  if (material) {
-    query = { ...query, material: material.toString() };
-  }
-
-  // Verificar si hay campos para actualizar
-  if (Object.keys(updates).length === 0) {
-    return res.status(400).send({ error: 'No updates provided' }); // Si no hay campos para actualizar, devolver un error 400
-  }
-
-  try {
-    const furniture = await Furniture.findOneAndUpdate(query, updates, { new: true, runValidators: true }); // Actualizar el mueble según la consulta y los campos proporcionados
-    if (!furniture) {
-      return res.status(404).send('Furniture not found'); // Si no se encuentra el mueble, devolver un error 404
+FurnitureRouter.patch('/furnitures', async (req: Request, res: Response) => {
+  if(req.query.nombre){
+    const name:string = req.query.nombre.toString();
+    const filter = {name: name}
+    try{
+      const furniture = await Furniture.updateMany(filter, req.body)
+      if (furniture) {
+        return res.send(furniture);
+      } else {
+        return res.status(404).send('Furniture not found');
+      }
+    } catch(error){
+      return res.status(404).send(error);
     }
-    return res.send(furniture); // Enviar el mueble actualizado como respuesta
-  } catch (error) {
-    return res.status(400).send(error); // Si ocurre algún error, devolver un error 400
+  } else if(req.query.id){
+    try{
+      const furniture = await Furniture.findByIdAndUpdate(req.query.id, req.body)
+      if (furniture) {
+        return res.send(furniture);
+      } else {
+        return res.status(404).send('Furniture not found');
+      }
+    } catch(error){
+      return res.status(404).send(error);
+    }
+  } else {
+    return res.status(400).send('Name parameter is required');
   }
 });
   
@@ -141,7 +140,7 @@ FurnitureRouter.delete('/furnitures', async (req: Request, res: Response) => {
   if (req.query.id) {
     const id = req.query.id;
     try {
-      const furniture = await Furniture.findByIdAndDelete({id});
+      const furniture = await Furniture.findByIdAndDelete(id);
       if (!furniture) {
         return res.status(404).send({ message: 'Mueble no encontrado' });
       }
@@ -163,9 +162,10 @@ FurnitureRouter.delete('/furnitures', async (req: Request, res: Response) => {
     }
   } // si se encuentra el parámetro material se busca por material y se actualiza con el mueble nuevo
   else if (req.query.material) {
-    const material = req.query.material;
+    const material = req.query.material.toString();
+    let filter = { material: material }
     try {
-      const furniture = await Furniture.findOneAndDelete({ material });
+      const furniture = await Furniture.deleteMany(filter);
       if (!furniture) {
         return res.status(404).send({ message: 'Mueble no encontrado' });
       }
