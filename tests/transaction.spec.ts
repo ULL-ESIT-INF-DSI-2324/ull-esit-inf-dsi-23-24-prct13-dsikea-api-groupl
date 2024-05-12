@@ -1,147 +1,243 @@
 
-/*// import request from 'supertest';
-// import { expect } from 'chai';
-// import { app } from '../src/index.js';
-// import Customer from '../src/models/customer.js';
-// import Provider from '../src/models/provider.js';
-// import Transaction from '../src/models/transaction.js';
-// import Furniture from '../src/models/furniture.js';
+ import request from 'supertest';
+ import { expect } from 'chai';
+ import { app } from '../src/index.js';
+ import Customer from '../src/models/customer.js';
+ import Provider from '../src/models/provider.js';
+ import Transaction from '../src/models/transaction.js';
+ import Furniture from '../src/models/furniture.js';
 
+ // Define los esquemas
 const firstCustomer = {
-  nombre: "Marta",
-  apellido: "Díaz",
-  nif: '51177772B',
-  direccion: 'Calle Principal 123',
-  telefono: '123456789'
-};
-
-const secondCustomer = {
-  nombre: "Alicia",
-  apellido: "Hernández",
-  nif: '51177772X',
-  direccion: 'Calle Secundaria 456',
-  telefono: '987654321'
+  nombre: "John",
+  apellido: "Doe",
+  nif: "12345678A",
+  direccion: "Calle Principal 123",
+  telefono: "123456789"
 };
 
 const firstProvider = {
-  nombre: "Proveedor1",
-  nif: '12345678A',
-  direccion: 'Calle Proveedor 1',
-  telefono: '111111111'
+  name: "Provider Inc.",
+  contact: "Jane Doe",
+  address: "123 Provider St.",
+  cif: "87654321B"
 };
 
 const firstFurniture = {
-  name: "Mesa",
-  description: "Mesa de madera",
+  name: "Table",
+  description: "Wooden table",
+  material: "wood",
+  dimensions: {
+    length: 120,
+    width: 80,
+    height: 75
+  },
   price: 100,
-  stock: 10
+  stock: 10,
+  color: "brown"
 };
 
-const secondFurniture = {
-  name: "Silla",
-  description: "Silla de metal",
-  price: 50,
-  stock: 5
-};
 
-// let firstCustomerId:string , secondCustomerId:string, firstProviderId:string, firstFurnitureId:string, secondFurnitureId:string;
+ describe('Transactions API', () => {
 
-// beforeEach(async () => {
-//   await Customer.deleteMany({});
-//   await Provider.deleteMany({});
-//   await Transaction.deleteMany({});
-//   await Furniture.deleteMany({});
-
-//   const firstCustomerSaved = await new Customer(firstCustomer).save();
-//   const secondCustomerSaved = await new Customer(secondCustomer).save();
-//   firstCustomerId = firstCustomerSaved._id;
-//   secondCustomerId = secondCustomerSaved._id;
-
-//   const firstProviderSaved = await new Provider(firstProvider).save();
-//   firstProviderId = firstProviderSaved._id;
-
-  const firstFurnitureSaved = await new Furniture(firstFurniture).save();
-  const secondFurnitureSaved = await new Furniture(secondFurniture).save();
-  firstFurnitureId = firstFurnitureSaved._id;
-  secondFurnitureId = secondFurnitureSaved._id;
-});
-
-// describe('TRANSACTIONS', function() {
-
-  context('GET /transactions', () => {
-    it('Should get all transactions', async () => {
-      const response = await request(app).get('/transactions').expect(200);
-      expect(response.body).to.be.an('array');
-      expect(response.body.length).to.equal(0);
-    });
-  }).timeout(3000);
-
-  context('POST /transactions', () => {
-    it('Should successfully create a new transaction', async () => {
-      await request(app).post('/transactions').send({
-        type: "Compra",
-        furniture: [{
-          furnitureId: firstFurnitureId,
-          quantity: 2
-        }],
-        customer: firstCustomerId,
-        provider: firstProviderId,
-        price: 200,
-        timestamp: new Date()
-      }).expect(201);
-    }).timeout(3000);
-    it('Should not create a new transaction. Insufficient stock', async () => {
-      await request(app).post('/transactions').send({
-        type: "Venta",
-        furniture: [{
-          furnitureId: firstFurnitureId,
-          quantity: 20 // More than available stock
-        }],
-        customer: firstCustomerId,
-        provider: firstProviderId,
-        price: 2000,
-        timestamp: new Date()
-      }).expect(404);
-    }).timeout(3000);
+  // Antes de cada prueba, eliminamos todas las transacciones y clientes
+  beforeEach(async () => {
+    await Transaction.deleteMany();
+    await Customer.deleteMany();
   });
 
-  context('PATCH /transactions', () => {
-    it('Should successfully update a transaction', async () => {
-      const newTransaction = await new Transaction({
-        type: "Venta",
-        furniture: [{
-          furnitureId: firstFurnitureId,
-          quantity: 1
-        }],
-        customer: secondCustomerId,
-        provider: firstProviderId,
+  describe('GET /transactions/:id', () => {
+    it('debería devolver la transacción por el id', async () => {
+      const customer = await new Customer({ 
+        nombre: "John", 
+        apellido: "Doe",
+        nif: "12345678A", 
+        direccion: "Calle Principal 123",
+        telefono: "123456789"
+      }).save();
+      const furniture = await new Furniture({ 
+        name: "Table", 
+        description: "Wooden table", 
+        material: "wood",
+        dimensions: { length: 100, width: 50, height: 70 },
+        price: 50, 
+        stock: 10,
+        color: "brown"
+      }).save();
+      const transaction = await new Transaction({ 
+        type: "Venta", 
+        furniture: [{ furniture: furniture, quantity: 2 }], 
+        customer: customer,
+        provider: null, 
         price: 100,
         timestamp: new Date()
       }).save();
-      await request(app).patch(`/transactions/${newTransaction._id}`).send({ price: 150 }).expect(200);
-    }).timeout(3000);
-    it('Should not update a transaction. Invalid id', async () => {
-      await request(app).patch('/transactions/123').send({ price: 150 }).expect(500);
-    }).timeout(3000);
+      
+      const res = await request(app).get(`/transactions/${transaction._id}`);
+      expect(res.status).to.equal(200);
+      expect(res.body._id).to.equal(transaction._id.toString());
+      expect(res.body.type).to.equal("Venta");
+      expect(res.body.customer).to.equal(customer._id.toString());
+      expect(res.body.provider).to.equal(null); 
+      expect(res.body.price).to.equal(100);
+    });
+
+    it('Retorna error 500 al haber error en la búsqueda de la transacción', async () => {
+      const res = await request(app).get('/transactions/60b1f7b3b3f3b3b3b3b3b3b');
+      expect(res.status).to.equal(500);
+    });
   });
 
-  context('DELETE /transactions', () => {
-    it('Should successfully delete a transaction', async () => {
-      const newTransaction = await new Transaction({
-        type: "Compra",
-        furniture: [{
-          furnitureId: secondFurnitureId,
-          quantity: 1
-        }],
-        customer: firstCustomerId,
-        provider: firstProviderId,
-        price: 50,
-        timestamp: new Date()
-      }).save();
-      await request(app).delete(`/transactions/${newTransaction._id}`).expect(200);
-    }).timeout(3000);
-    it('Should not delete a transaction. Invalid id', async () => {
-      await request(app).delete('/transactions/123').expect(500);
-    }).timeout(3000);
+});
+
+describe('POST /transactions', () => {
+  it('debería crear una nueva transacción con datos válidos', async () => {
+    const customer = await new Customer(firstCustomer).save();
+    const provider = await new Provider(firstProvider).save();
+    const furniture = await new Furniture(firstFurniture).save();
+    // Datos válidos para una nueva transacción
+    const newTransactionData = {
+      type: "Venta",
+      furniture: [{ furniture: furniture._id, quantity: 1 }],
+      customer: customer._id,
+      provider: provider._id,
+      price: 150,
+      timestamp: new Date()
+    };
+
+    const response = await request(app).post('/transactions').send(newTransactionData).expect(201);
+    expect(response.body).to.be.an('object');
   });
-}); */
+
+  it('debería devolver un error si no hay suficiente stock para la transacción', async () => {
+    const customer = await new Customer(firstCustomer).save();
+    const provider = await new Provider(firstProvider).save();
+    const furniture = await new Furniture(firstFurniture).save();
+    // Datos de transacción donde hay exceso de cantidad de muebles en comparación con el stock disponible
+    const transactionWithInsufficientStock = {
+      type: "Venta",
+      furniture: [{ furniture: furniture._id, quantity: 60 }],
+      customer: customer._id,
+      provider: provider._id,
+      price: 2000,
+      timestamp: new Date()
+    };
+
+    const response = await request(app).post('/transactions').send(transactionWithInsufficientStock).expect(400);
+    expect(response.body).to.have.property('message', 'No hay suficiente stock');
+  });
+
+  it('debería devolver un error si los datos de la transacción son inválidos', async () => {
+    // Datos de transacción inválidos
+    const invalidTransactionData = {
+      type: "Venta",
+      price: 150,
+      timestamp: new Date() 
+    };
+
+    const response = await request(app).post('/transactions').send(invalidTransactionData).expect(404);
+    expect(response.body).to.have.property('message', 'No se ha podido crear la transacción');
+  });
+});
+
+describe('PATCH /transactions/:id', () => {
+  it('debería actualizar una transacción existente correctamente', async () => {
+    const customer = await new Customer(firstCustomer).save();
+    const provider = await new Provider(firstProvider).save();
+    const furniture = await new Furniture(firstFurniture).save();
+    // Crear una nueva transacción para actualizar
+    const newTransactionData = {
+      type: 'Compra',
+      furniture: [{ furniture: furniture._id, quantity: 2 }],
+      customer: customer._id,
+      provider: furniture._id,
+      price: 300,
+      timestamp: new Date()
+    };
+    const newTransaction = new Transaction(newTransactionData);
+    await newTransaction.save();
+
+    // Datos actualizados para la transacción
+    const updatedTransactionData = {
+      type: 'Venta',
+      price: 500,
+    };
+
+    // Realizar la solicitud PATCH para actualizar la transacción
+    const response = await request(app)
+      .patch(`/transactions/${newTransaction._id}`)
+      .send(updatedTransactionData)
+      .expect(200);
+
+    // Verificar que la respuesta contiene los datos actualizados
+    expect(response.body).to.have.property('type', updatedTransactionData.type);
+    expect(response.body).to.have.property('price', updatedTransactionData.price);
+  });
+
+  it('debería devolver un error si se intenta actualizar un campo no permitido', async () => {
+    const customer = await new Customer(firstCustomer).save();
+    const provider = await new Provider(firstProvider).save();
+    const furniture = await new Furniture(firstFurniture).save();
+    // Crear una nueva transacción para intentar actualizar
+    const newTransactionData = {
+      type: 'Compra',
+      furniture: [{ furniture: furniture._id, quantity: 2 }],
+      customer: customer._id,
+      provider: provider._id,
+      price: 300,
+      timestamp: new Date()
+    };
+    const newTransaction = new Transaction(newTransactionData);
+    await newTransaction.save();
+
+    // Intentar actualizar un campo no permitido
+    const updatedTransactionData = {
+      invalidField: 'Valor inválido'
+    };
+
+    // Realizar la solicitud PATCH con datos de actualización no permitidos
+    const response = await request(app)
+      .patch(`/transactions/${newTransaction._id}`)
+      .send(updatedTransactionData)
+      .expect(400);
+
+    // Verificar que la respuesta contiene el mensaje de error esperado
+    expect(response.body).to.have.property('error', 'No se pudo realizar la actualización');
+  });
+
+  it('debería devolver un error si se intenta actualizar una transacción que no existe', async () => {
+    // ID de una transacción que no existe en la base de datos
+    const nonExistentTransactionId = '609c36671c50b36c79d9bdcf';
+
+    // Datos para la actualización (en este caso, no importa porque la transacción no existe)
+    const updatedTransactionData = {
+      type: 'Venta',
+      price: 500,
+    };
+
+    // Realizar la solicitud PATCH para actualizar una transacción que no existe
+    const response = await request(app)
+      .patch(`/transactions/${nonExistentTransactionId}`)
+      .send(updatedTransactionData)
+      .expect(404);
+
+    // Verificar que la respuesta contiene el mensaje de error esperado
+    expect(response.body).to.have.property('error', 'La transacción no existe');
+  });
+});
+
+describe('DELETE /transactions/:id', () => {
+
+  it('debería devolver un error si se intenta eliminar una transacción que no existe', async () => {
+    // ID de una transacción que no existe en la base de datos
+    const nonExistentTransactionId = '609c36671c50b36c79d9bdcf';
+
+    // Realizar la solicitud DELETE para eliminar una transacción que no existe
+    const response = await request(app)
+      .delete(`/transactions/${nonExistentTransactionId}`)
+      .expect(404);
+
+    // Verificar que la respuesta contiene el mensaje de error esperado
+    expect(response.body).to.have.property('error', 'La transacción no existe');
+  });
+});

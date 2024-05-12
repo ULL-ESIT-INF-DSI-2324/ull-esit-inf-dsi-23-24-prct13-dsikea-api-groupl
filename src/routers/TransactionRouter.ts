@@ -7,6 +7,20 @@ import  Provider  from '../models/provider.js';
 
 export const TransactionRouter = express.Router();
 
+TransactionRouter.get('/transactions/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const transaction = await Transaction.findById(id);
+    if (!transaction) {
+      return res.status(404).send({ error: 'La transacción no existe' });
+    }
+    return res.status(200).send(transaction);
+  } catch (error) {
+    return res.status(500).send({ error: 'Hubo un error al buscar la transacción' });
+  }
+});
+
+
 
 TransactionRouter.get('/transactions', async(req: Request, res: Response) => {
 
@@ -73,25 +87,41 @@ if (req.query.nif) {
 });
 
 TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
-//para crear una transaccion se debe comprobar que el nif existe en la base de datos de clientes y proveedores, se debe de comprobar que el id de los muebles existen en la base de datos de muebles además de que hay stock de los mismos
+  // Extraer datos de la solicitud
+  const { type, furniture, customer, provider, price, timestamp } = req.body;
+
   try {
-    const transaction = new Transaction(req.body);
-    const customer = new Customer(req.body.customer);
-    const provider = new Provider(req.body.provider);
-    const furniture = new Furniture(req.body.furniture);
-    await customer.save();
-    await provider.save();
-    await furniture.save();
-    if (furniture.stock < req.body.furniture.quantity) {
-      return res.status(404).send({ message: 'No hay suficiente stock' });
+    // Verificar si hay suficiente stock para los muebles
+    for (const item of furniture) {
+      const { furniture: furnitureId, quantity } = item;
+      const existingFurniture = await Furniture.findById(furnitureId);
+      if (!existingFurniture || existingFurniture.stock < quantity) {
+        return res.status(400).send({ message: 'No hay suficiente stock' });
+      }
     }
-    await transaction.save();
-    return res.status(201).send(transaction);
+
+    // Crear una nueva transacción
+    const newTransaction = new Transaction({ type, furniture, customer, provider, price, timestamp });
+    await newTransaction.save();
+
+    // Actualizar el stock de los muebles
+    for (const item of furniture) {
+      const { furniture: furnitureId, quantity } = item;
+      const existingFurniture = await Furniture.findById(furnitureId);
+      if (!existingFurniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      existingFurniture.stock -= quantity;
+      await existingFurniture.save();
+    }
+
+    // Enviar respuesta exitosa
+    return res.status(201).send(newTransaction);
   } catch (error) {
     return res.status(404).send({message: 'No se ha podido crear la transacción'});
   }
-} 
-);
+});
+
 
 TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response) => {
   try {
@@ -138,6 +168,7 @@ TransactionRouter.delete('/transactions/:id', async (req: Request, res: Response
     // Filtrado de la transacción
     const id = req.params.id;
     const filter = { _id: id };
+
 
     // Búsqueda de la transacción
     const transaction = await Transaction.findById(id);
