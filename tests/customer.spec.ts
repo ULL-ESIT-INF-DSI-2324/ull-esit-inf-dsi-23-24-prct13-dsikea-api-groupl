@@ -20,7 +20,7 @@ const secondCustomer = {
 };
 
 beforeEach(async () => {
-  await Customer.deleteMany({});
+  await Customer.deleteMany();
 });
 
 describe('CUSTOMERS', function() {

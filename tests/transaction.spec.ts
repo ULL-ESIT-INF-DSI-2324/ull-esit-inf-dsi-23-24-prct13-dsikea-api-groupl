@@ -242,4 +242,5 @@ describe('DELETE /transactions/:id', () => {
     // Verificar que la respuesta contiene el mensaje de error esperado
     expect(response.body).to.have.property('error', 'La transacción no existe');
   });
+
 });
