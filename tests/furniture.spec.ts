@@ -63,13 +63,12 @@ let firstFurnitureId:string , secondFurnitureId:string, firstFurnitureName:strin
 
 beforeEach(async () => {
   await Furniture.deleteMany();
-
-
 });
 
 describe('FURNITURES', function() {
   context('PATCH /furnitures/id/:id', () => {
     it('Should successfully update a furniture', async () => {
+      
       const furniture = await new Furniture(secondFurniture).save();
       await request(app).patch(`/furnitures/${furniture.id}`).send({price: 300}).expect(200);
     });
