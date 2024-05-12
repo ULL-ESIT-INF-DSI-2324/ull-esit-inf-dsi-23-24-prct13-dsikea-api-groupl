@@ -23,7 +23,6 @@ const secondProvider = {
 
 beforeEach(async () => {
   await Provider.deleteMany({});
-  await new Provider(firstProvider).save();
 });
 
 describe('PROVIDERS', function() {
@@ -33,6 +32,7 @@ describe('PROVIDERS', function() {
       await request(app).get(`/providers/id/${newProvider._id}`).expect(200);
     });
     it('Should find a provider by cif', async () => {
+      const newProvider = await new Provider(firstProvider).save();
       await request(app).get(`/providers/${firstProvider.cif}`).expect(200);
     });
     it('Should not find a provider by cif', async () => {
@@ -61,6 +61,7 @@ describe('PROVIDERS', function() {
       }).expect(400);
     });
     it('Should not create a new provider. Duplicated cif', async () => {
+      const newProvider = await new Provider(firstProvider).save();
       await request(app).post('/providers').send({
         name: "Provider3",
         contact: "Contact3",
