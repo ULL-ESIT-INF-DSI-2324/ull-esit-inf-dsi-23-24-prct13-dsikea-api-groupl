@@ -21,7 +21,6 @@ const secondCustomer = {
 
 beforeEach(async () => {
   await Customer.deleteMany({});
-  await new Customer(firstCustomer).save();
 });
 
 describe('CUSTOMERS', function() {
@@ -29,6 +28,7 @@ describe('CUSTOMERS', function() {
 
   context('GET /customers', () => {
     it('Should get all customers', async () => {
+      const newCustomer = await new Customer(firstCustomer).save();
       const response = await request(app).get('/customers').expect(200);
       expect(response.body.length).to.equal(1);
     });
@@ -53,6 +53,7 @@ describe('CUSTOMERS', function() {
       }).expect(400);
     }).timeout(3000); 
     it('Should not create a new customer. Duplicated nif', async () => {
+      const newCustomer = await new Customer(firstCustomer).save();
       await request(app).post('/customers').send({
         nombre: "Bob",
         apellido: "Johnson",
@@ -75,11 +76,16 @@ describe('CUSTOMERS', function() {
 
   context('DELETE /customers', () => {
     it('Should successfully delete a customer', async () => {
-            const newCustomer = await new Customer(secondCustomer).save();
+      const newCustomer = await new Customer(secondCustomer).save();
       await request(app).delete(`/customers/nif/51177772X`).expect(200);
+    }).timeout(3000); 
+    it('Should successfully delete a customer', async () => {
+      const newCustomer = await new Customer(firstCustomer).save();
+      await request(app).delete(`/customers/nif/51177772B`).expect(200);
     }).timeout(3000); 
     it('Should not delete a customer. Invalid id', async () => {
       await request(app).delete('/customers/id/123').expect(500);
-    }).timeout(3000); 
+    }).timeout(3000);
+     
   });
 });
