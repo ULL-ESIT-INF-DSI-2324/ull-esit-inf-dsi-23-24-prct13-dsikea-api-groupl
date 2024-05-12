@@ -59,7 +59,7 @@ const fourthFurniture = {
   color: "white"
 };
 
-let firstFurnitureId:string , secondFurnitureId:string ;
+let firstFurnitureId:string , secondFurnitureId:string, firstFurnitureName:string ;
 
 beforeEach(async () => {
   await Furniture.deleteMany();
@@ -67,6 +67,7 @@ beforeEach(async () => {
   const furniture = await new Furniture(secondFurniture).save();
   secondFurnitureId = furniture._id;
   firstFurnitureId = furniture1._id;
+  firstFurnitureName = furniture1.name;
 
 });
 
@@ -145,10 +146,10 @@ describe('FURNITURES', function() {
 
   context('PATCH /furnitures/', () => {
     it('Should successfully update a furniture by query string', async () => {
-      await request(app).patch(`/furnitures/?id=${firstFurnitureId}`).send({ price: 250 }).expect(200);
+      await request(app).patch(`/furnitures?id=${firstFurnitureId}`).send({ price: 250 }).expect(200);
     }).timeout(3000);
     it('Should not update a furniture by query string. Invalid id', async () => {
-      await request(app).patch('/furnitures/?id=123').send({ price: 250 }).expect(404);
+      await request(app).patch('/furnitures?id=123').send({ price: 250 }).expect(404);
     }).timeout(3000);
   });
 
