@@ -37,7 +37,6 @@ const firstFurniture = {
 };
 
 
- describe('Transactions API', () => {
 
   // Antes de cada prueba, eliminamos todas las transacciones y clientes
   beforeEach(async () => {
@@ -46,6 +45,9 @@ const firstFurniture = {
     await Furniture.deleteMany();
     await Provider.deleteMany();
   });
+  
+ describe('Transactions API', () => {
+
 
   describe('GET /transactions/:id', () => {
     it('debería devolver la transacción por el id', async () => {
