@@ -72,7 +72,7 @@ FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
 
 
 // Actualizar un mueble por ID
-FurnitureRouter.patch('/furnitures/id/:id', async (req: Request, res: Response) => {
+FurnitureRouter.patch('/furnitures/:id', async (req: Request, res: Response) => {
   try {
     const furniture = await Furniture.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (furniture) {
@@ -162,9 +162,10 @@ FurnitureRouter.delete('/furnitures', async (req: Request, res: Response) => {
     }
   } // si se encuentra el parámetro material se busca por material y se actualiza con el mueble nuevo
   else if (req.query.material) {
-    const material = req.query.material;
+    const material = req.query.material.toString();
+    let filter = { material: material }
     try {
-      const furniture = await Furniture.deleteMany({ material });
+      const furniture = await Furniture.deleteMany(filter);
       if (!furniture) {
         return res.status(404).send({ message: 'Mueble no encontrado' });
       }

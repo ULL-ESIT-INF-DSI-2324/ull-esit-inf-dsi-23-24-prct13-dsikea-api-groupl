@@ -75,12 +75,10 @@ describe('FURNITURES', function() {
   context('PATCH /furnitures/id/:id', () => {
     it('Should successfully update a furniture', async () => {
       const furniture = await new Furniture(secondFurniture).save();
-
-
-      await request(app).patch(`/furnitures/id/${furniture.id}`).send({price: 300}).expect(200);
+      await request(app).patch(`/furnitures/${furniture.id}`).send({price: 300}).expect(200);
     });
     it('Should not update a furniture. Invalid id', async () => {
-      await request(app).patch('/furnitures/id/123').send({ price: 200 }).expect(400);
+      await request(app).patch('/furnitures/123').send({ price: 200 }).expect(400);
     }).timeout(3000);
   });
   context('GET /furnitures', () => {
@@ -148,8 +146,9 @@ describe('FURNITURES', function() {
     it('Should successfully update a furniture by query string', async () => {
       await request(app).patch(`/furnitures?id=${firstFurnitureId}`).send({ price: 250 }).expect(200);
     }).timeout(3000);
+    
     it('Should not update a furniture by query string. Invalid id', async () => {
-      await request(app).patch('/furnitures?id=123').send({ price: 250 }).expect(404);
+      await request(app).patch('/furnitures/?id=123').send({ price: 250 }).expect(404);
     }).timeout(3000);
   });
 
