@@ -1,4 +1,4 @@
-/* import request from 'supertest';
+import request from 'supertest';
 import { expect } from 'chai';
 import { app } from '../src/index.js';
 import Furniture from '../src/models/furniture.js';
@@ -31,7 +31,7 @@ const secondFurniture = {
   color: "white"
 };
 
-let firstFurnitureId, secondFurnitureId;
+let firstFurnitureId:string , secondFurnitureId:string ;
 
 beforeEach(async () => {
   await Furniture.deleteMany({});
@@ -129,4 +129,4 @@ describe('FURNITURES', function() {
       await request(app).delete('/furnitures/query?id=123').expect(404);
     }).timeout(3000);
   });
-}); */
+}); 
