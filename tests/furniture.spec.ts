@@ -31,19 +31,40 @@ const secondFurniture = {
   color: "white"
 };
 
+const thirdFurniture = {
+  name: "Silla",
+  description: "Silla de plástico",
+  material: "plastic",
+  dimensions: {
+    length: 80,
+    width: 40,
+    height: 90
+  },
+  price: 100,
+  stock: 20,
+  color: "white"
+};
+
 let firstFurnitureId:string , secondFurnitureId:string ;
 
 beforeEach(async () => {
-  await Furniture.deleteMany({});
+  await Furniture.deleteMany();
+  await new Furniture(firstFurniture).save();
+  const furniture = await new Furniture(secondFurniture).save();
+  secondFurnitureId = furniture._id;
 
-  const firstFurnitureSaved = await new Furniture(firstFurniture).save();
-  const secondFurnitureSaved = await new Furniture(secondFurniture).save();
-  firstFurnitureId = firstFurnitureSaved._id;
-  secondFurnitureId = secondFurnitureSaved._id;
 });
 
 describe('FURNITURES', function() {
+  context('PATCH /furnitures/id/:id', () => {
+    it('Should successfully update a furniture', async () => {
 
+      await request(app).patch(`/furnitures/${secondFurnitureId}`).send(thirdFurniture).expect(200);
+    });
+    it('Should not update a furniture. Invalid id', async () => {
+      await request(app).patch('/furnitures/id/123').send({ price: 200 }).expect(404);
+    }).timeout(3000);
+  });
   context('GET /furnitures', () => {
     it('Should get all furnitures', async () => {
       const response = await request(app).get('/furnitures').expect(200);
@@ -84,14 +105,7 @@ describe('FURNITURES', function() {
     }).timeout(3000);
   });
 
-  context('PATCH /furnitures/id/:id', () => {
-    it('Should successfully update a furniture by ID', async () => {
-      await request(app).patch(`/furnitures/id/${firstFurnitureId}`).send({ price: 200 }).expect(200);
-    }).timeout(3000);
-    it('Should not update a furniture. Invalid id', async () => {
-      await request(app).patch('/furnitures/id/123').send({ price: 200 }).expect(404);
-    }).timeout(3000);
-  });
+
 
   context('DELETE /furnitures/id/:id', () => {
     it('Should successfully delete a furniture by ID', async () => {
