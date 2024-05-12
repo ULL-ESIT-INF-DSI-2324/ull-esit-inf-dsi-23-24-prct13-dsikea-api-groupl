@@ -1,4 +1,5 @@
-// import request from 'supertest';
+
+/*// import request from 'supertest';
 // import { expect } from 'chai';
 // import { app } from '../src/index.js';
 // import Customer from '../src/models/customer.js';
