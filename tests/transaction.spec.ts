@@ -44,6 +44,8 @@ const firstFurniture = {
   beforeEach(async () => {
     await Transaction.deleteMany();
     await Customer.deleteMany();
+    await Furniture.deleteMany();
+    await Provider.deleteMany();
   });
 
   describe('GET /transactions/:id', () => {
