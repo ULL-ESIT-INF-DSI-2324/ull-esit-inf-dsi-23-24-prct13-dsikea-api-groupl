@@ -285,12 +285,765 @@ const Transaction = model<ITransaction>("Transaction", transactionSchema);
 ### Routers ###
 #### CustomerRouter ####
 
+Crear un nuevo cliente:
+
+Se define una ruta POST en /customers para crear un nuevo cliente.
+Se utiliza un bloque try-catch para manejar cualquier error que ocurra durante la creación del cliente. Si la creación es exitosa, se envía una respuesta con estado 201 (Creado) y se envía el cliente creado como respuesta. Si hay un error, se envía una respuesta con estado 400 (Solicitud incorrecta) con el error.
+```
+CustomerRouter.post('/customers', async (req: Request, res: Response) => {
+  try {
+    const customer = new Customer(req.body);
+    await customer.save();
+    res.status(201).send(customer);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+```
+
+Leer todos los clientes:
+
+Se define una ruta GET en /customers para leer todos los clientes.
+Si se proporciona el parámetro de consulta nif, se busca un cliente por ese número de identificación fiscal.
+Si no se proporciona el parámetro nif, se devuelven todos los clientes.
+Se manejan los posibles errores con bloques try-catch.
+```
+CustomerRouter.get('/customers', async (req: Request, res: Response) => {
+  // si en el query string se encuentra el parámetro nif se busca por nif
+  if (req.query.nif) {
+    const nif = req.query.nif;
+    try {
+      const customer = await Customer.findOne({ nif });
+      if (!customer) {
+        return res.status(404).send({ message: 'Cliente no encontrado' });
+      }
+      return res.send(customer);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } else {
+    //si el parámetro nif no se encuentra se listan todos los clientes
+    try {
+      const customers = await Customer.find();
+      return res.send(customers);
+    } catch (error) {
+      return  res.status(500).send(error);
+  }
+}
+
+});
+```
+
+Leer un cliente por ID:
+
+Se define una ruta GET en /customers/id/:id para leer un cliente por su ID.
+Se busca el cliente por su ID y se manejan los posibles errores con bloques try-catch.
+```
+CustomerRouter.get('/customers/id/:id', async (req: Request, res: Response) => {
+    const id = req.params.id;
+    try {
+      const customer = await Customer.findById(id);
+      if (!customer) {
+        return res.status(404).send({ message: 'Cliente no encontrado' });
+      }
+      return res.send(customer); // Agregar 'return' aquí
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+});
+```
+
+Actualizar un cliente por NIF:
+
+Se define una ruta PATCH en /customers para actualizar un cliente por su NIF.
+Se valida que las actualizaciones proporcionadas en el cuerpo de la solicitud sean permitidas.
+Se busca el cliente por su NIF y se actualiza con los datos proporcionados en el cuerpo de la solicitud.
+Se manejan los posibles errores con bloques try-catch.
+```
+CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
+   // si en el query string se encuentra el parámetro nif se busca por nif y se actualiza con el cliente nuevo
+  if (req.query.nif) {
+    const nif = req.query.nif;
+    // comprobar que el cliente del body es válido 
+    
+    try {
+      const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
+      if (!customer) {
+        return res.status(404).send({ message: 'Cliente no encontrado' });
+      }
+      return res.send(customer);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } else {
+    //si el parámetro nif no se encuentra se devuelve un error
+    return res.status(400).send({ message: 'No se ha proporcionado un NIF' });
+  }
+
+});
+```
+
+Actualizar un cliente por ID:
+
+Se define otra ruta PATCH en /customers para actualizar un cliente por su ID. La implementación es similar a la anterior.
+```
+CustomerRouter.patch('/customers/', async (req: Request, res: Response) => {
+  // Si en el query string se encuentra el parámetro nif, se busca por nif y se actualiza con el cliente nuevo
+  if (req.query.nif) {
+      const nif = req.query.nif as string;
+      // Comprobar que el cliente del body es válido
+      const allowedUpdates = ['nombre', 'apellido', 'direccion', 'telefono'];
+      const actualUpdates = Object.keys(req.body);
+      const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+      if (!isValidUpdate) {
+          return res.status(400).send({
+              error: 'Actualización no permitida',
+          });
+      }
+
+      try {
+          const customer = await Customer.findOneAndUpdate({ nif }, req.body, { new: true });
+          if (!customer) {
+              return res.status(404).send({ message: 'Cliente no encontrado' });
+          }
+          return res.send(customer);
+      } catch (error) {
+          return res.status(500).send(error);
+      }
+  } else {
+      // Si el parámetro nif no se encuentra se devuelve un error
+      return res.status(400).send({ message: 'No se ha proporcionado un NIF' });
+  }
+});
+```
+Borrar un cliente por NIF:
+
+Se define una ruta DELETE en /customers/nif/:nif para borrar un cliente por su NIF.
+Se busca el cliente por su NIF y se borra de la base de datos.
+```
+CustomerRouter.delete('/customers/nif/:nif', async (req: Request, res: Response) => {
+  const nif = req.params.nif;
+  try {
+    const customer = await Customer.findOneAndDelete({ nif });
+    if (!customer) {
+      return res.status(404).send({ message: 'Cliente no encontrado' });
+    }
+    return res.send(customer);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+```
+Borrar un cliente por ID:
+
+Se define otra ruta DELETE en /customers/id/:id para borrar un cliente por su ID. La implementación es similar a la anterior.
+```
+CustomerRouter.delete('/customers/id/:id', async (req: Request, res: Response) => {
+  const id = req.params.id;
+  try {
+    const customer = await Customer.findByIdAndDelete(id);
+    if (!customer) {
+      return res.status(404).send({ message: 'Cliente no encontrado' });
+    }
+    return res.send(customer);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+```
+
 #### ProviderRouter ####
 
+Crear un nuevo proveedor:
+
+Se define una ruta POST en /providers para crear un nuevo proveedor.
+Se crea una instancia del modelo Provider con los datos proporcionados en el cuerpo de la solicitud.
+Se utiliza un bloque try-catch para manejar cualquier error que ocurra durante la creación del proveedor. Si la creación es exitosa, se envía una respuesta con estado 201 (Creado) y se envía el proveedor creado como respuesta. Si hay un error, se envía una respuesta con estado 400 (Solicitud incorrecta) con el error.
+```
+ProvidersRouter.post('/providers', async (req: Request, res: Response) => {
+  const provider = new Provider(req.body);
+  try {
+    await provider.save();
+    res.status(201).send(provider);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+```
+
+Leer todos los proveedores:
+
+Se define una ruta GET en /providers para leer todos los proveedores.
+Se busca y devuelve todos los proveedores en la base de datos.
+Se manejan los posibles errores con bloques try-catch.
+```
+ProvidersRouter.get('/providers', async (req: Request, res: Response) => {
+  try {
+    const providers = await Provider.find();
+    res.send(providers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+```
+
+Leer un proveedor por CIF:
+
+Se define una ruta GET en /providers/:cif para leer un proveedor por su CIF (Código de Identificación Fiscal).
+Se busca el proveedor por su CIF y se manejan los posibles errores con bloques try-catch.
+```
+ProvidersRouter.get('/providers/:cif', async (req: Request, res: Response) => {
+    const cif = req.params.cif;
+    try {
+      const provider = await Provider.findOne({ cif });
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      return res.send(provider);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  });
+```
+
+Leer un proveedor por ID:
+
+Se define una ruta GET en /providers/id/:id para leer un proveedor por su ID.
+Se busca el proveedor por su ID y se manejan los posibles errores con bloques try-catch.
+```
+ProvidersRouter.get('/providers/id/:id', async (req: Request, res: Response) => {
+    const id = req.params.id;
+    try {
+      const provider = await Provider.findById(id);
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      return res.send(provider);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  });
+```
+
+Actualizar un proveedor por CIF:
+
+Se define una ruta PATCH en /providers para actualizar un proveedor por su CIF.
+Se valida que las actualizaciones proporcionadas en el cuerpo de la solicitud sean permitidas.
+Se busca el proveedor por su CIF y se actualiza con los datos proporcionados en el cuerpo de la solicitud.
+Se manejan los posibles errores con bloques try-catch.
+```
+ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
+  if (!req.query.cif) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un CIF',});
+  }
+
+  const Updates = ['name', 'contact', 'address', 'email', 'mobilePhone'];
+  const UpdateExistente = Object.keys(req.body);
+  const isValidUpdate = UpdateExistente.every((update) => Updates.includes(update));
+
+  if (!isValidUpdate) {
+    return res.status(400).send({
+        error: 'Actualización no permitida',
+    });
+  }
+
+  try {
+    const provider = await Provider.findOneAndUpdate(
+        { cif: req.query.cif.toString() },
+        req.body,
+        { new: true, runValidators: true }
+    );
+
+    if (provider) {
+      return res.send(provider);
+    }
+    return res.status(404).send();
+  } catch (error) {
+      return res.status(500).send(error);
+  }
+});
+```
+
+Borrar un proveedor por CIF:
+
+Se define una ruta DELETE en /providers/:cif para borrar un proveedor por su CIF.
+Se busca y borra el proveedor por su CIF en la base de datos.
+Se manejan los posibles errores con bloques try-catch.
+```
+ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) => {
+  if (!req.query.cif) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un CIF',});
+  }
+    const cif = req.params.cif;
+    try {
+      const provider = await Provider.findOneAndDelete({ cif });
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      return res.send(provider);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+});
+```
+
+Borrar un proveedor por ID:
+
+Se define una ruta DELETE en /providers/:id para borrar un proveedor por su ID. La implementación es similar a la anterior.
+```
+ProvidersRouter.delete('/providers/:id', async (req: Request, res: Response) => {
+  if (!req.query.id) {
+    return res.status(400).send({
+      error: 'Se debe proporcionar un ID',});
+  }
+    const id = req.params.id;
+    try {
+      const provider = await Provider.findByIdAndDelete(id);
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      return res.send(provider);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  });
+```
+
 #### FurnitureRouter ####
+Crear un nuevo mueble:
+
+Se define una ruta POST en /furnitures para crear un nuevo mueble.
+Se crea una instancia del modelo Furniture con los datos proporcionados en el cuerpo de la solicitud.
+Se utiliza un bloque try-catch para manejar cualquier error que ocurra durante la creación del mueble. Si la creación es exitosa, se envía una respuesta con estado 201 (Creado) y se envía el mueble creado como respuesta. Si hay un error, se envía una respuesta con estado 400 (Solicitud incorrecta) con el error.
+```
+FurnitureRouter.post('/furnitures', async (req: Request, res: Response) => {
+  try {
+    const furniture = new Furniture(req.body);
+    await furniture.save();
+    res.status(201).send(furniture);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+```
+
+Leer todos los muebles:
+
+Se define una ruta GET en /furnitures para leer todos los muebles.
+Se filtran los muebles según los parámetros proporcionados en el query string, como material, nombre o descripción.
+Se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.get('/furnitures', async (req: Request, res: Response) => {
+   //si en el query se encuentra el parámetro material o nombre o descripcion se busca por esos campos
+    if (req.query.material || req.query.nombre || req.query.descripcion) {
+      const material = req.query.material;
+      const nombre = req.query.nombre;
+      const descripcion = req.query.descripcion;
+      try {
+        const furniture = await Furniture.find({ material, nombre, descripcion });
+        if (!furniture) {
+          return res.status(404).send({ message: 'Mueble no encontrado' });
+        }
+        return res.send(furniture);
+      } catch (error) {
+        return res.status(500).send(error);
+      }
+    } //si se incluye el parametro id se busca por id de la base de datos
+    else if (req.query.id) {
+      const id = req.query.id;
+      try {
+        const furniture = await Furniture.findById({ id });
+        if (!furniture) {
+          return res.status(404).send({ message: 'Mueble no encontrado' });
+        }
+        return res.send(furniture);
+      }
+      catch (error) {
+        return res.status(500).send({message: 'Error en la busqueda por id'}); 
+      }
+  } else {
+      //si no se encuentra ningun parametro se listan todos los muebles
+      try {
+        const furnitures = await Furniture.find();
+        return res.send(furnitures);
+      } catch (error) {
+        return  res.status(500).send(error);
+    }
+  }
+
+});
+```
+
+Leer un mueble por ID:
+
+Se define una ruta GET en /furnitures/:id para leer un mueble por su ID.
+Se busca el mueble por su ID y se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.get('/furnitures/:id', async (req: Request, res: Response) => {
+    const id = req.params.id;
+    try {
+      const furniture = await Furniture.findById(id);
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+}); 
+```
+
+Actualizar un mueble por ID:
+
+Se define una ruta PATCH en /furnitures/id/:id para actualizar un mueble por su ID.
+Se busca y actualiza el mueble por su ID con los datos proporcionados en el cuerpo de la solicitud.
+Se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.patch('/furnitures/id/:id', async (req: Request, res: Response) => {
+   // Se actualiza el mueble por id, el mueble se encuentra en el body
+    const id = req.params.id;
+    try {
+      const furniture = await Furniture.findByIdAndUpdate({id}, req.body, { new: true });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(404).send({ message: 'fallo en la busqueda del id' });
+    }
+});
+```
+
+Borrar un mueble por ID:
+
+Se define una ruta DELETE en /furnitures/id/:id para borrar un mueble por su ID.
+Se busca y borra el mueble por su ID en la base de datos.
+Se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.delete('/furnitures/id/:id', async (req: Request, res: Response) => {
+// buscar un mueble por id y si existe eliminarlo
+    const id = req.params.id;
+    try {
+      const furniture = await Furniture.findByIdAndDelete(id);
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+});
+```
+  
+Actualizar un mueble por query string (campos flexibles):
+
+Se define una ruta PATCH en /furnitures/ para actualizar un mueble según los parámetros proporcionados en el query string, como ID, nombre o material.
+Se valida la presencia de los parámetros necesarios y se actualiza el mueble con los datos proporcionados.
+Se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.patch('/furnitures/', async (req: Request, res: Response) => {
+  //si en el query string se encuentra el parámetro id se busca por id y se actualiza con el mueble nuevo
+  if (req.query.id) {
+    const id = req.query.id;
+    try {
+      const furniture = await Furniture.findByIdAndUpdate({id}, req.body, { new: true });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(404).send({message: 'fallo en la busqueda del id'});
+    }
+  } // si se encuentra el parámetro nombre se busca por nombre y se actualiza con el mueble nuevo
+  else if (req.query.nombre) {
+    const nombre = req.query.nombre;
+    try {
+      const furniture = await Furniture.findOneAndUpdate({ nombre }, req.body, { new: true });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } // si se encuentra el parámetro material se busca por material y se actualiza con el mueble nuevo
+  else if (req.query.material) {
+    const material = req.query.material;
+    try {
+      const furniture = await Furniture.findOneAndUpdate({ material }, req.body, { new: true });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } // si no se encuentra ningun parametro se devuelve un error
+  else {
+    return res.status(404).send({message: 'No se ha encontrado el mueble'});
+  }
+});
+```
+
+Borrar un mueble por query string (campos flexibles):
+
+Se define una ruta DELETE en /furnitures/query para borrar un mueble según los parámetros proporcionados en el query string, como ID, nombre o material.
+Se valida la presencia de los parámetros necesarios y se borra el mueble correspondiente.
+Se manejan los posibles errores con bloques try-catch.
+```
+FurnitureRouter.delete('/furnitures/query', async (req: Request, res: Response) => {
+  //si en el query string se encuentra el parámetro id se busca por id y se actualiza con el mueble nuevo
+  if (req.query.id) {
+    const id = req.query.id;
+    try {
+      const furniture = await Furniture.findByIdAndDelete({id});
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(404).send({message: 'fallo en la busqueda del id'});
+    }
+  } // si se encuentra el parámetro nombre se busca por nombre y se actualiza con el mueble nuevo
+  else if (req.query.nombre) {
+    const nombre = req.query.nombre;
+    try {
+      const furniture = await Furniture.findOneAndDelete({ nombre });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } // si se encuentra el parámetro material se busca por material y se actualiza con el mueble nuevo
+  else if (req.query.material) {
+    const material = req.query.material;
+    try {
+      const furniture = await Furniture.findOneAndDelete({ material });
+      if (!furniture) {
+        return res.status(404).send({ message: 'Mueble no encontrado' });
+      }
+      return res.send(furniture);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  } // si no se encuentra ningun parametro se devuelve un error
+  else {
+    return res.status(404).send({message: 'No se ha encontrado el mueble'});
+  }
+});
+```
 
 #### TransactionRouter ####
+Leer todas las transacciones:
 
+Se define una ruta GET en /transactions para leer todas las transacciones.
+Se filtran las transacciones según los parámetros proporcionados en el query string, como nif, date, type o id.
+Se manejan los posibles errores con bloques try-catch.
+```
+TransactionRouter.get('/transactions', async(req: Request, res: Response) => {
+
+// si se incluye un query string en el que aparezca el parámetro nif se pusca por ese nif, si aparece el parámetro date este tendrá dos fechas y deberá buscar las transacciones entre esas dos fechas 
+if (req.query.nif) {
+    const nif = req.query.nif;
+    try {
+      const customer = await Customer.findOne({ nif });
+      if (!customer) {
+        return res.status(404).send({ message: 'Cliente no encontrado' });
+      }
+      const transactions = await Transaction.find({customer: customer._id});
+      return res.send(transactions);
+    } catch (error) {
+      return res.status(404).send({ message: 'No existen transacciones'});
+    } // debe buscar tambien en la base de datos de providers
+  } else if (req.query.nif) {
+    const nif = req.query.nif;
+    try {
+      const provider = await Provider.findOne({ nif });
+      if (!provider) {
+        return res.status(404).send({ message: 'Proveedor no encontrado' });
+      }
+      const transactions = await Transaction.find({provider: provider._id});
+      return res.send(transactions);
+    } catch (error) {
+      return res.status(404).send({ message: 'No existen transacciones'});
+    }
+  } else if (req.query.date){
+    const date = req.query.date;
+    try {
+      const transactions = await Transaction.find({date});
+      return res.send(transactions);
+    } catch (error) {
+      return res.status(404).send({ message: 'No existen transacciones'});
+    }
+  } // si en el query se incluye un parámetro tipo se buscará por ese tipo
+  else if(req.query.type){
+    const type = req.query.type;
+    try {
+      const transactions = await Transaction.find({ type });
+      return res.send(transactions);
+    } catch ( error ){
+      return res.status(404).send({ message: 'No existen transacciones de ese tipo'});
+    }
+  } // si se incluye el parámetro id se buscará por el id de la base de datos
+  else if(req.query.id){
+    const id = req.query.id;
+    try {
+      const transactions = await Transaction.findById({ id })
+      return res.send(transactions);
+
+  } catch (error){
+    return res.status(404).send({ message: 'No existen transacciones con ese id' });
+  } 
+  } else {
+    try {
+      const transactions = await Transaction.find();
+      return res.send(transactions);
+    } catch (error) {
+      return res.status(404).send({ message: 'No existen transacciones'});
+    }
+  }
+});
+```
+Crear una nueva transacción:
+
+Se define una ruta POST en /transactions para crear una nueva transacción.
+Se valida que el cliente, el proveedor y los muebles asociados existan en la base de datos y que haya suficiente stock de los muebles.
+Se manejan los posibles errores con bloques try-catch.
+```
+TransactionRouter.post('/transactions', async(req: Request, res: Response) => {
+//para crear una transaccion se debe comprobar que el nif existe en la base de datos de clientes y proveedores, se debe de comprobar que el id de los muebles existen en la base de datos de muebles además de que hay stock de los mismos
+  try {
+    const transaction = new Transaction(req.body);
+    const customer = new Customer(req.body.customer);
+    const provider = new Provider(req.body.provider);
+    const furniture = new Furniture(req.body.furniture);
+    await customer.save();
+    await provider.save();
+    await furniture.save();
+    if (furniture.stock < req.body.furniture.quantity) {
+      return res.status(404).send({ message: 'No hay suficiente stock' });
+    }
+    await transaction.save();
+    return res.status(201).send(transaction);
+  } catch (error) {
+    return res.status(404).send({message: 'No se ha podido crear la transacción'});
+  }
+} 
+);
+```
+Actualizar una transacción por ID:
+
+Se define una ruta PATCH en /transactions/:id para actualizar una transacción por su ID.
+Se valida que las actualizaciones sean permitidas y se aplican al documento de transacción.
+Se manejan los posibles errores con bloques try-catch.
+```
+TransactionRouter.patch('/transactions/:id', async (req: Request, res: Response) => {
+  try {
+    // Validar las actualizaciones permitidas
+    const updates = Object.keys(req.body);
+    const allowedFields = ['type', 'furniture', 'customer', 'provider', 'price', 'timestamp'];
+    const isUpdateAllowed = updates.every((update) => allowedFields.includes(update));
+    if (!isUpdateAllowed) {
+      return res.status(400).send({ error: 'No se pudo realizar la actualización' });
+    }
+
+    // Obtener el ID de la transacción y los campos de actualización
+    const id = req.params.id;
+    const updatedFields: { [key: string]: any } = {};
+    for (const key of updates) {
+      updatedFields[key] = req.body[key];
+    }
+
+    // Actualizar la transacción
+    const transaction = await Transaction.findOne({ _id: id });
+    if (!transaction) {
+      return res.status(404).send({ error: 'La transacción no existe' });
+    }
+
+    for (const key in updatedFields) {
+      // Asegurar que la clave es válida y hacer una aserción de tipo
+      if (Object.prototype.hasOwnProperty.call(updatedFields, key)) {
+        (transaction as any)[key] = updatedFields[key];
+      }
+    }
+    await transaction.save();
+
+    // Manejar la respuesta
+    return res.status(200).send(transaction);
+  } catch (error) {
+    // Manejar errores
+    return res.status(500).send({ error: 'Hubo un error tratando de modificar la transacción' });
+  }
+});
+```
+Borrar una transacción por ID:
+
+Se define una ruta DELETE en /transactions/:id para borrar una transacción por su ID.
+Se busca la transacción por su ID y se verifican los participantes asociados (cliente o proveedor).
+Se manipula el stock de los muebles dependiendo del tipo de transacción.
+Se manejan los posibles errores con bloques try-catch.
+```
+TransactionRouter.delete('/transactions/:id', async (req: Request, res: Response) => {
+  try {
+    // Filtrado de la transacción
+    const id = req.params.id;
+    const filter = { _id: id };
+
+    // Búsqueda de la transacción
+    const transaction = await Transaction.findById(id);
+    if (!transaction) {
+      return res.status(404).send({ error: 'La transacción no existe' });
+    }
+
+    // Verificación de existencia del participante
+    const customer = await Customer.findById(transaction.customer);
+    const provider = await Provider.findById(transaction.provider);
+    if (!customer && !provider) {
+      return res.status(404).send({ error: 'El cliente o proveedor asociado a la transacción no existe' });
+    }
+
+    // Verificación del tipo de transacción y manipulación de stock
+    if (transaction.type === 'Venta' && customer) {
+      // Se aumenta el stock para los muebles vendidos al cliente
+      for (const furnitureData of transaction.furniture) {
+        const furniture = await Furniture.findById(furnitureData.furniture);
+        if (!furniture) {
+          return res.status(404).send({ error: 'Uno de los muebles asociados a la transacción no existe' });
+        }
+        furniture.stock += furnitureData.quantity.valueOf();
+        await furniture.save();
+      }
+    } else if (transaction.type === 'Compra' && provider) {
+      // Se disminuye el stock para los muebles comprados al proveedor
+      for (const furnitureData of transaction.furniture) {
+        const furniture = await Furniture.findById(furnitureData.furniture);
+        if (!furniture) {
+          return res.status(404).send({ error: 'Uno de los muebles asociados a la transacción no existe' });
+        }
+        if (furniture.stock < furnitureData.quantity.valueOf()) {
+          return res.status(400).send({ error: 'No hay suficiente stock para realizar la eliminación' });
+        }
+        furniture.stock -= furnitureData.quantity.valueOf();
+        await furniture.save();
+      }
+    }
+
+    // Eliminación de la transacción
+    await Transaction.findByIdAndDelete(id);
+
+    // Respuesta HTTP en caso de éxito
+    return res.status(200).send({ message: 'Transacción eliminada exitosamente' });
+  } catch (error) {
+    // Respuesta HTTP en caso de error
+    return res.status(500).send({ error: 'Hubo un error tratando de eliminar la transacción' });
+  }
+});
+```
 
 ## Conclusión ##
 

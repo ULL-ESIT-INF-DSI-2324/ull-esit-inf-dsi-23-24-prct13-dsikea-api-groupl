@@ -14,7 +14,7 @@ const firstCustomer = {
 const secondCustomer = {
   nombre: "Alicia",
   apellido: "Hernández",
-  nif: '51177772X"',
+  nif: '51177772X',
   direccion: 'Calle Secundaria 456',
   telefono: '987654321'
 };
@@ -66,20 +66,20 @@ describe('CUSTOMERS', function() {
   context('PATCH /customers', () => {
     it('Should successfully update a customer', async () => {
       const newCustomer = await new Customer(secondCustomer).save();
-      await request(app).patch(`/customers/${newCustomer._id}`).send({ telefono: '123456789' }).expect(200);
+      await request(app).patch(`/customers?nif=51177772X`).send({ telefono: '123456789' }).expect(200);
     }).timeout(3000); 
     it('Should not update a customer. Invalid id', async () => {
-      await request(app).patch('/customers/123').send({ telefono: '123456789' }).expect(400);
+      await request(app).patch('/customers/123').send({ telefono: '123456789' }).expect(404);
     }).timeout(3000); 
   });
 
   context('DELETE /customers', () => {
     it('Should successfully delete a customer', async () => {
             const newCustomer = await new Customer(secondCustomer).save();
-      await request(app).delete(`/customers/${newCustomer._id}`).expect(200);
+      await request(app).delete(`/customers/nif/51177772X`).expect(200);
     }).timeout(3000); 
     it('Should not delete a customer. Invalid id', async () => {
-      await request(app).delete('/customers/123').expect(400);
+      await request(app).delete('/customers/id/123').expect(500);
     }).timeout(3000); 
   });
 });
