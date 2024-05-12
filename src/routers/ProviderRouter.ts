@@ -88,10 +88,6 @@ ProvidersRouter.patch('/providers', async (req: Request, res: Response) => {
 
 // Borrar un proveedor por CIF
 ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) => {
-  if (!req.query.cif) {
-    return res.status(400).send({
-      error: 'Se debe proporcionar un CIF',});
-  }
     const cif = req.params.cif;
     try {
       const provider = await Provider.findOneAndDelete({ cif });
@@ -106,10 +102,6 @@ ProvidersRouter.delete('/providers/:cif', async (req: Request, res: Response) =>
 
 // Borrar un proveedor por ID
 ProvidersRouter.delete('/providers/:id', async (req: Request, res: Response) => {
-  if (!req.query.id) {
-    return res.status(400).send({
-      error: 'Se debe proporcionar un ID',});
-  }
     const id = req.params.id;
     try {
       const provider = await Provider.findByIdAndDelete(id);

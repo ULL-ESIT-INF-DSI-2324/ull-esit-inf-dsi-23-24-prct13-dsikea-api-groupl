@@ -1,4 +1,4 @@
-/* import request from 'supertest';
+import request from 'supertest';
 import { expect } from 'chai';
 import { app } from '../src/index.js';
 import Provider from '../src/models/provider.js';
@@ -88,12 +88,12 @@ describe('PROVIDERS', function() {
       await request(app).delete(`/providers/${newProvider.cif}`).expect(200);
     });
     it('Should not delete a provider. Invalid cif', async () => {
-      await request(app).delete('/providers/123').expect(400);
+      await request(app).delete('/providers/123').expect(404);
     });
     it('Should successfully delete a provider by id', async () => {
       const newProvider = await new Provider(secondProvider).save();
-      await request(app).delete(`/providers/id/${newProvider._id}`).expect(200);
+      await request(app).delete(`/providers/${newProvider.id}`).expect(200);
     });
   });
 });
- */
+ 
