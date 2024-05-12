@@ -63,11 +63,7 @@ let firstFurnitureId:string , secondFurnitureId:string, firstFurnitureName:strin
 
 beforeEach(async () => {
   await Furniture.deleteMany();
-  const furniture1 = await new Furniture(firstFurniture).save();
-  const furniture = await new Furniture(secondFurniture).save();
-  secondFurnitureId = furniture._id;
-  firstFurnitureId = furniture1._id;
-  firstFurnitureName = furniture1.name;
+
 
 });
 
@@ -83,6 +79,11 @@ describe('FURNITURES', function() {
   });
   context('GET /furnitures', () => {
     it('Should get all furnitures', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       const response = await request(app).get('/furnitures').expect(200);
       expect(response.body).to.be.an('array');
       expect(response.body.length).to.equal(2);
@@ -125,25 +126,50 @@ describe('FURNITURES', function() {
 
   context('DELETE /furnitures/id/:id', () => {
     it('Should successfully delete a furniture by ID', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       await request(app).delete(`/furnitures/id/${secondFurnitureId}`).expect(200);
     }).timeout(3000);
     it('Should not delete a furniture. Invalid id', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       await request(app).delete('/furnitures/id/66417815a4f1e3e4d9d2344b').expect(404);
     }).timeout(3000);
   });
 
   context('GET /furnitures/:id', () => {
     it('Should get a furniture by ID', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       const newFurniture = await new Furniture(fourthFurniture).save();
       await request(app).get(`/furnitures/${newFurniture.id}`).expect(200);
     }).timeout(3000);
     it('Should not get a furniture. Invalid id', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       await request(app).get('/furnitures/123fdada').expect(500);
     }).timeout(3000);
   });
 
   context('PATCH /furnitures/', () => {
     it('Should successfully update a furniture by query string', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       await request(app).patch(`/furnitures?id=${firstFurnitureId}`).send({ price: 250 }).expect(200);
     }).timeout(3000);
     
@@ -154,6 +180,11 @@ describe('FURNITURES', function() {
 
   context('DELETE /furnitures/query', () => {
     it('Should successfully delete a furniture by query string', async () => {
+      const furniture1 = await new Furniture(firstFurniture).save();
+      const furniture = await new Furniture(secondFurniture).save();
+      secondFurnitureId = furniture._id;
+      firstFurnitureId = furniture1._id;
+      firstFurnitureName = furniture1.name;
       const newFurniture = await new Furniture(fourthFurniture).save();
       await request(app).delete(`/furnitures?id=${newFurniture.id}`).expect(200);
     }).timeout(3000);
